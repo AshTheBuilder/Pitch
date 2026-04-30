@@ -87,10 +87,10 @@ body{font-family:'Poppins',sans-serif;font-weight:300;background:var(--light);co
 }
 .header-sub{
   background:var(--red);
-  padding:0.5rem 2.5rem;
+  padding:0;
 }
 .header-sub-inner{
-  max-width:1000px;margin:0 auto;
+  max-width:1000px;margin:0 auto;padding:0.5rem 2.5rem;
   display:flex;align-items:center;justify-content:space-between;
 }
 .header-sub p{
@@ -311,11 +311,14 @@ select{
 
 /* ── MODE TOGGLE ── */
 .mode-bar{background:var(--cream);border-bottom:1px solid var(--border);padding:0.5rem 2.5rem;}
-.mode-bar-inner{max-width:1000px;margin:0 auto;display:flex;align-items:center;gap:6px;}
+.mode-bar-inner{max-width:1000px;margin:0 auto;display:flex;align-items:end;gap:8px;flex-wrap:wrap;}
+.mode-select-group{display:flex;flex-direction:column;gap:4px;min-width:240px;}
+.mode-label{font-size:0.58rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--gray);font-weight:400;}
+.mode-select{padding:5px 34px 5px 12px;border:1px solid var(--border);border-radius:2px;font-family:'Poppins',sans-serif;font-size:0.72rem;font-weight:400;letter-spacing:0.03em;background:var(--white);color:var(--char);cursor:pointer;min-height:32px;}
 .mode-btn{padding:5px 14px;border:1px solid var(--border);border-radius:2px;font-family:'Poppins',sans-serif;font-size:0.68rem;font-weight:400;letter-spacing:0.05em;text-transform:uppercase;cursor:pointer;background:var(--white);color:var(--gray);transition:all 0.12s;}
 .mode-btn.active{background:var(--red);color:white;border-color:var(--red);}
 .mode-btn:hover:not(.active){border-color:#c0b8b0;color:var(--char);}
-.mode-divider{width:1px;height:16px;background:var(--border);margin:0 4px;}
+.mode-divider{width:1px;height:16px;background:var(--border);margin:0 4px 7px;}
 .history-btn{margin-left:auto;display:flex;align-items:center;gap:5px;padding:5px 12px;border:1px solid var(--border);border-radius:2px;font-family:'Poppins',sans-serif;font-size:0.68rem;font-weight:400;cursor:pointer;background:var(--white);color:var(--gray);transition:all 0.12s;}
 .history-btn:hover{border-color:var(--red);color:var(--red);}
 
@@ -390,7 +393,7 @@ select{
   </div>
   <div class="header-sub">
     <div class="header-sub-inner">
-      <p>Texas Portfolio &nbsp;·&nbsp; Proposal Builder</p>
+      <p>Pitch: Prospect to Proposal</p>
       <p></p>
     </div>
   </div>
@@ -399,9 +402,14 @@ select{
 <!-- MODE BAR -->
 <div class="mode-bar">
   <div class="mode-bar-inner">
-    <button class="mode-btn active" id="modeNew" onclick="setMode('new')">New Prospect</button>
-    <button class="mode-btn" id="modeRenewal" onclick="setMode('renewal')">Renewal / Existing Client</button>
-    <button class="mode-btn" id="modeProspect" onclick="setMode('prospect')">✦ Tools</button>
+    <div class="mode-select-group">
+      <label class="mode-label" for="clientTypeSelect">Client Type</label>
+      <select id="clientTypeSelect" class="mode-select" onchange="setMode(this.value)">
+        <option value="new">New Prospect</option>
+        <option value="renewal">Renewal / Existing Client</option>
+      </select>
+    </div>
+    <button class="mode-btn" id="modeProspect" onclick="setMode('prospect')">Tools</button>
     <div class="mode-divider"></div>
     <button class="history-btn" onclick="openHistory()">
       <span>📋</span><span>Past Proposals</span><span id="historyCount" style="background:var(--red);color:white;border-radius:10px;padding:1px 6px;font-size:0.6rem;display:none;"></span>
@@ -621,6 +629,19 @@ select{
       </div>
     </div>
 
+    <div class="prospect-divider"></div>
+
+    <div class="prospect-section">
+      <div class="prospect-section-header">
+        <div class="prospect-section-title">Deadline Alert</div>
+        <div class="prospect-section-sub">Look up space and materials deadlines before you send, or use them in the meeting to close with confidence.</div>
+      </div>
+      <div style="display:flex;gap:8px;">
+        <input type="text" id="deadlineQuery" placeholder="e.g. Toast of the Town, Holiday Gift Guide, PaperCity March..." style="flex:1;padding:0.4rem 0.75rem;border:1px solid var(--border);border-radius:2px;font-family:'Poppins',sans-serif;font-size:0.76rem;color:var(--char);background:var(--white);outline:none;" onkeydown="if(event.key==='Enter')lookupDeadline()">
+        <button onclick="lookupDeadline()" style="padding:0 14px;background:var(--black);color:white;border:none;border-radius:2px;font-family:'Poppins',sans-serif;font-size:0.7rem;font-weight:400;letter-spacing:0.06em;text-transform:uppercase;cursor:pointer;white-space:nowrap;">Look Up</button>
+      </div><div id="deadlineResult" style="display:none;margin-top:10px;"></div>
+    </div>
+
   </div>
 </div>
 
@@ -656,7 +677,7 @@ select{
     </div>
 
     <div class="card">
-      <div class="card-header"><span class="card-title">Client Brief</span><button id="suggestBtn" onclick="suggestProducts()" style="font-family:'Poppins',sans-serif;font-size:0.65rem;font-weight:500;letter-spacing:0.06em;text-transform:uppercase;color:var(--red);background:none;border:1px solid var(--red);border-radius:2px;padding:4px 10px;cursor:pointer;">Suggest Products</button></div>
+      <div class="card-header" style="justify-content:flex-end;"><button id="suggestBtn" onclick="suggestProducts()" style="font-family:'Poppins',sans-serif;font-size:0.65rem;font-weight:500;letter-spacing:0.06em;text-transform:uppercase;color:var(--red);background:none;border:1px solid var(--red);border-radius:2px;padding:4px 10px;cursor:pointer;">Suggest Products</button></div>
       <div class="card-body">
         <div class="field-row">
           <div class="field"><label>Client / Company</label><input type="text" id="cn" placeholder="e.g. Restoration Hardware"></div>
@@ -839,17 +860,6 @@ select{
         </div>
       </div>
 
-      <!-- DEADLINE ALERT — inline in proposal builder -->
-      <div style="background:var(--white);border:1px solid var(--border);border-radius:2px;padding:0.875rem 1rem;margin-bottom:0.625rem;">
-        <div style="font-size:0.6rem;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;color:var(--red);margin-bottom:6px;">Deadline Alert</div>
-        <div style="font-size:0.68rem;color:var(--gray);margin-bottom:10px;">Look up space and materials deadlines before you send — or use in the meeting to close.</div>
-        <div style="display:flex;gap:8px;">
-          <input type="text" id="deadlineQuery" placeholder="e.g. Toast of the Town, Holiday Gift Guide, PaperCity March..." style="flex:1;padding:0.4rem 0.75rem;border:1px solid var(--border);border-radius:2px;font-family:'Poppins',sans-serif;font-size:0.76rem;color:var(--char);background:var(--white);outline:none;" onkeydown="if(event.key==='Enter')lookupDeadline()">
-          <button onclick="lookupDeadline()" style="padding:0 14px;background:var(--black);color:white;border:none;border-radius:2px;font-family:'Poppins',sans-serif;font-size:0.7rem;font-weight:400;letter-spacing:0.06em;text-transform:uppercase;cursor:pointer;white-space:nowrap;">Look Up</button>
-        </div>
-        <div id="deadlineResult" style="display:none;margin-top:10px;"></div>
-      </div>
-
       <button class="gen-btn" id="genBtn" onclick="generate()">
         <span>Generate Proposal</span><span style="font-size:1rem;">→</span>
       </button>
@@ -1024,18 +1034,18 @@ ${relTone ? relTone + '\n\n' : ''}${isRenewal ? `This is a RENEWAL proposal for 
 
 Renewal proposal structure:
 1. A warm opening that acknowledges the relationship (2-3 sentences — specific, never generic)
-2. "What's Working" — briefly affirm what's been successful in their current program
-3. "2026 Recommendation" — 2-3 paragraphs explaining the proposed mix. Reference what's new in 2026 that's relevant to their category.
+2. "What's Working" — 2-4 concise bullet points
+3. "2026 Recommendation" — 3-5 concise bullet points explaining the proposed mix. Reference what's new in 2026 that's relevant to their category.
 4. "Media Plan & Investment" — clean product list with prices
-5. A confident closing that makes renewal feel like the obvious next step. Reference contract date if provided.
+5. A confident closing paragraph that makes renewal feel like the obvious next step. Reference contract date if provided.
 6. Signature` : `Always write proposals in this exact order:
 1. A personalized opening paragraph (2-3 sentences, specific to this client and their goals — never generic)
-2. "Why This Mix" — 2-3 paragraphs tying the selected products to the client's goals and our audience
+2. "Why This Mix" — 3-5 concise bullet points tying the selected products to the client's goals and our audience
 3. "Media Plan & Investment" — a clean list of all selected products with prices
-4. A short, warm closing with a clear next step
+4. A short, warm closing paragraph with a clear next step
 5. Signature`}
 
-Voice rules: sophisticated, warm, confident. No corporate jargon. No em-dashes. No generic filler. Every sentence earns its place. Write like you know this client personally. CRITICAL FORMATTING RULE: Each paragraph must be written as a single unbroken line of text with NO line breaks within it. Only use a blank line between paragraphs. Never break a sentence across lines. For the Media Plan section specifically: put EACH product on its own separate line, one product per line, never combine products with dashes or separators.
+Voice rules: sophisticated, warm, confident. No corporate jargon. No em-dashes. No generic filler. Every sentence earns its place. Write like you know this client personally. FORMATTING RULE: Preserve clean line breaks. Use bullet points that begin with "- " for "What's Working", "Why This Mix", and "2026 Recommendation". For the Media Plan section specifically: put EACH product on its own separate line, one product per line, never combine products with dashes or separators.
 
 ${deadlineNote}
 
@@ -1069,13 +1079,12 @@ CRITICAL MATH RULE: You MUST copy the Media Plan & Investment section EXACTLY as
   const socialProofLine = socialProof ? `Current clients in similar category to reference naturally: ${socialProof}\n` : '';
   const objectionLine = objection ? `Objection to address in the proposal (weave in naturally, don't be defensive): ${objection}\n` : '';
   const userPrompt='Please write a '+(isRenewal?'renewal ':'')+'proposal for the following client:\n\nClient: '+cn+'\n'+(wb?'Website: '+wb+'\n':'')+'Industry: '+ind+'\nRelationship: '+rel+'\nPrimary Goal: '+goal+'\nBudget Range: '+budget+'\nTimeline: '+timeline+'\n'+(gl?'Additional Notes: '+gl+'\n':'')+socialProofLine+objectionLine+renewalContext+'PaperCity Print Markets: '+pMkts+'\nPaperCity Digital Markets: '+dMkts+'\n\nWrite the proposal in the exact structure defined in your instructions. Copy this media plan section EXACTLY with no changes to prices or names:\n\n'+mediaSection+'\n\n'+(isRenewal?'Close with a confident renewal ask that makes saying yes feel easy. Reference the renewal date if provided.':'Close with a short warm paragraph and a clear next step.')+'\nSignature: '+repN+' | '+repT+' | TRIBEZA · PaperCity · Round Top | '+repP+' | '+repE;;const outSec=document.getElementById('outputSection');const outBody=document.getElementById('outputBody');const loading=document.getElementById('loading');const btn=document.getElementById('genBtn');outSec.classList.add('visible');loading.classList.add('visible');outBody.textContent='';btn.disabled=true;outSec.scrollIntoView({behavior:'smooth',block:'start'});try{const res=await fetch('/.netlify/functions/proxy',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':API_KEY,'anthropic-version':'2023-06-01'},body:JSON.stringify({model:'claude-sonnet-4-5',max_tokens:1500,system:systemPrompt,messages:[{role:'user',content:userPrompt}]})});const data=await res.json();loading.classList.remove('visible');if(data.error){outBody.textContent='Error: '+data.error.message;}else{var rawText=data.content?.[0]?.text||'No response received.';rawText=rawText.replace(/\u2014/g,' - ').replace(/\u2013/g,' - ');rawText=rawText.split('\n').filter(function(l){return l.trim().toUpperCase().indexOf('MEDIA PROPOSAL FOR')!==0;}).join('\n').trim();
-    // Normalize: collapse single line breaks within paragraphs into spaces
-    // Double newlines = real paragraph breaks, keep them
-    // Aggressively normalize: mark double newlines, collapse singles, restore doubles
-    rawText=rawText.replace(/\n\n/g,'<<PARA>>');
-    rawText=rawText.replace(/\n/g,' ');
-    rawText=rawText.replace(/<<PARA>>/g,'\n\n');
-    rawText=rawText.replace(/ {2,}/g,' ');
+    // Preserve intentional list formatting and clean up excess spacing
+    rawText=rawText.replace(/\r/g,'');
+    rawText=rawText.replace(/\n[ \t]+/g,'\n');
+    rawText=rawText.replace(/[ \t]+\n/g,'\n');
+    rawText=rawText.replace(/\n{3,}/g,'\n\n');
+    rawText=rawText.replace(/[ \t]{2,}/g,' ');
     outBody.textContent=rawText;
     // Save to history
     const historyEntry = {
@@ -1540,10 +1549,12 @@ build();
 let currentMode = 'new';
 function setMode(mode) {
   currentMode = mode;
-  document.getElementById('modeNew').classList.toggle('active', mode === 'new');
-  document.getElementById('modeRenewal').classList.toggle('active', mode === 'renewal');
   document.getElementById('modeProspect').classList.toggle('active', mode === 'prospect');
   const rf = document.getElementById('renewalFields');
+  const clientTypeSelect = document.getElementById('clientTypeSelect');
+  if (clientTypeSelect && mode !== 'prospect') {
+    clientTypeSelect.value = mode;
+  }
   rf.classList.toggle('visible', mode === 'renewal');
   // Show/hide main builder vs prospect panel
   const mb = document.getElementById('mainBuilder');
