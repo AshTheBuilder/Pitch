@@ -88,17 +88,20 @@ body{font-family:'Poppins',sans-serif;font-weight:300;background:var(--light);co
 .header-sub{
   background:var(--red);
   padding:0;
+  border-top:1px solid var(--red);
+  border-bottom:1px solid var(--red);
 }
 .header-sub-inner{
-  max-width:1000px;margin:0 auto;padding:0.5rem 2.5rem;
-  display:flex;align-items:center;justify-content:space-between;
+  max-width:1000px;margin:0 auto;padding:0.8rem 2.5rem 0.85rem;
+  display:flex;align-items:center;justify-content:flex-start;
 }
 .header-sub p{
-  font-size:0.62rem;
-  letter-spacing:0.15em;
+  font-size:0.9rem;
+  letter-spacing:0.08em;
   text-transform:uppercase;
-  color:rgba(255,255,255,0.75);
-  font-weight:400;
+  color:#fff;
+  font-weight:600;
+  line-height:1;
 }
 
 /* ── LAYOUT ── */
@@ -312,9 +315,11 @@ select{
 /* ── MODE TOGGLE ── */
 .mode-bar{background:var(--cream);border-bottom:1px solid var(--border);padding:0.5rem 2.5rem;}
 .mode-bar-inner{max-width:1000px;margin:0 auto;display:flex;align-items:end;gap:8px;flex-wrap:wrap;}
-.mode-select-group{display:flex;flex-direction:column;gap:4px;min-width:240px;}
-.mode-label{font-size:0.58rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--gray);font-weight:400;}
-.mode-select{padding:5px 34px 5px 12px;border:1px solid var(--border);border-radius:2px;font-family:'Poppins',sans-serif;font-size:0.72rem;font-weight:400;letter-spacing:0.03em;background:var(--white);color:var(--char);cursor:pointer;min-height:32px;}
+.mode-select-group{display:flex;flex-direction:column;gap:4px;min-width:0;}
+.mode-label{font-size:0.58rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--gray);font-weight:400;display:none;}
+.mode-select{padding:5px 36px 5px 12px;border:1px solid var(--red);border-radius:2px;font-family:'Poppins',sans-serif;font-size:0.68rem;font-weight:500;letter-spacing:0.05em;text-transform:uppercase;background:var(--red);color:#fff;cursor:pointer;min-height:32px;width:190px;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='white'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:34px;}
+.mode-select:hover{background:var(--red-dark);border-color:var(--red-dark);}
+.mode-select:focus{outline:none;border-color:var(--red-dark);background:var(--red-dark);}
 .mode-btn{padding:5px 14px;border:1px solid var(--border);border-radius:2px;font-family:'Poppins',sans-serif;font-size:0.68rem;font-weight:400;letter-spacing:0.05em;text-transform:uppercase;cursor:pointer;background:var(--white);color:var(--gray);transition:all 0.12s;}
 .mode-btn.active{background:var(--red);color:white;border-color:var(--red);}
 .mode-btn:hover:not(.active){border-color:#c0b8b0;color:var(--char);}
@@ -394,7 +399,6 @@ select{
   <div class="header-sub">
     <div class="header-sub-inner">
       <p>Pitch: Prospect to Proposal</p>
-      <p></p>
     </div>
   </div>
 </div>
