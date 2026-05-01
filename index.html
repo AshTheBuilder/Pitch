@@ -41,6 +41,7 @@ function checkPwd(){
 }
 </script>
 <link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:opsz,wght@6..96,400;6..96,500;6..96,600;6..96,700&family=Crimson+Pro:ital,wght@0,400;0,600;1,400&family=Open+Sans:wght@300;400;500;600&family=Playfair+Display:wght@400;600&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 <style>
 :root {
   --red: #751e1b;
@@ -52,10 +53,15 @@ function checkPwd(){
   --plum: #c59bcb;
   --black: #111111;
   --char: #201c1b;
-  --gray: #6f6862;
-  --light: #f8f3f0;
-  --cream: #f1e9e1;
-  --border: #ddd1c4;
+  --gray: #5d544d;
+  --muted: #877b70;
+  --light: #f8f4ef;
+  --cream: #efe6dc;
+  --border: #cbbfb1;
+  --panel: #fcfaf7;
+  --pill-bg: rgba(255,255,255,0.92);
+  --success: #2f6b33;
+  --success-soft: #e6f3e5;
   --white: #ffffff;
   --shadow: 0 18px 45px rgba(40, 24, 18, 0.08);
   --font-display: 'Bodoni Moda', 'Playfair Display', serif;
@@ -147,12 +153,13 @@ label{display:block;font-family:var(--font-ui);font-size:0.58rem;letter-spacing:
 input[type="text"],select,textarea{
   width:100%;padding:0.62rem 0.8rem;
   border:1px solid var(--border);border-radius:12px;
-  font-family:var(--font-body);font-weight:300;font-size:0.8rem;
+  font-family:var(--font-body);font-weight:400;font-size:0.8rem;
   color:var(--char);background:var(--white);
   transition:border-color 0.15s, box-shadow 0.15s, transform 0.15s;appearance:none;
 }
 input[type="text"]:focus,select:focus,textarea:focus{outline:none;border-color:rgba(117,30,27,0.48);box-shadow:0 0 0 4px rgba(197,155,203,0.16);}
 textarea{resize:vertical;min-height:68px;line-height:1.5;}
+input[type="text"]::placeholder,textarea::placeholder{color:var(--muted);opacity:1;}
 select{
   background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%236b6b6b'/%3E%3C/svg%3E");
   background-repeat:no-repeat;background-position:right 0.75rem center;padding-right:2rem;
@@ -333,20 +340,98 @@ select{
 .footer{text-align:center;padding:1.9rem 1.5rem 2rem;font-family:var(--font-ui);font-size:0.62rem;color:#9c8f82;letter-spacing:0.16em;text-transform:uppercase;border-top:1px solid rgba(117,30,27,0.08);margin-top:1.25rem;}
 .footer-rule{height:2px;background:linear-gradient(to right,var(--red),var(--gold));max-width:120px;margin:0 auto 0.875rem;}
 
-/* ── MODE TOGGLE ── */
-.mode-bar{background:linear-gradient(180deg, rgba(248,243,240,0.96), rgba(241,233,225,0.96));border-bottom:1px solid rgba(117,30,27,0.08);padding:0.65rem 2.5rem;}
-.mode-bar-inner{max-width:1000px;margin:0 auto;display:flex;align-items:end;gap:8px;flex-wrap:wrap;}
-.mode-select-group{display:flex;flex-direction:column;gap:4px;min-width:0;}
-.mode-label{font-size:0.58rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--gray);font-weight:400;display:none;}
-.mode-select{padding:8px 38px 8px 14px;border:1px solid transparent;border-radius:999px;font-family:var(--font-ui);font-size:0.66rem;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;background:linear-gradient(135deg, var(--red), var(--rose));color:#fff;cursor:pointer;min-height:38px;width:210px;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='white'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;padding-right:36px;box-shadow:0 12px 24px rgba(117,30,27,0.16);}
-.mode-select:hover{background:var(--red-dark);border-color:var(--red-dark);}
-.mode-select:focus{outline:none;border-color:var(--red-dark);background:var(--red-dark);}
-.mode-btn{padding:7px 15px;border:1px solid var(--border);border-radius:999px;font-family:var(--font-ui);font-size:0.66rem;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;cursor:pointer;background:var(--white);color:var(--gray);transition:all 0.12s;}
-.mode-btn.active{background:linear-gradient(135deg, var(--red), var(--rose));color:white;border-color:transparent;}
-.mode-btn:hover:not(.active){border-color:#c0b8b0;color:var(--char);}
-.mode-divider{width:1px;height:16px;background:var(--border);margin:0 4px 7px;}
-.history-btn{margin-left:auto;display:flex;align-items:center;gap:5px;padding:7px 14px;border:1px solid var(--border);border-radius:999px;font-family:var(--font-ui);font-size:0.66rem;font-weight:600;cursor:pointer;background:var(--white);color:var(--gray);transition:all 0.12s;}
-.history-btn:hover{border-color:var(--red);color:var(--red);}
+/* ── NAVIGATION ── */
+.mode-bar{background:linear-gradient(180deg, rgba(248,243,240,0.96), rgba(241,233,225,0.96));border-bottom:1px solid rgba(117,30,27,0.08);padding:0.8rem 2.5rem;}
+.mode-bar-inner{max-width:1000px;margin:0 auto;display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+.nav-menu{position:relative;}
+.nav-pill{
+  min-height:42px;padding:0 15px;border:1px solid var(--border);border-radius:999px;
+  font-family:var(--font-ui);font-size:0.7rem;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;
+  cursor:pointer;background:var(--pill-bg);color:var(--char);transition:all 0.14s;
+  display:inline-flex;align-items:center;gap:9px;box-shadow:0 8px 20px rgba(40,24,18,0.05);
+}
+.nav-pill:hover{border-color:#b59d8d;background:#fff;}
+.nav-pill.active{background:linear-gradient(135deg, var(--red), var(--rose));color:#fff;border-color:transparent;box-shadow:0 14px 28px rgba(117,30,27,0.18);}
+.nav-icon{
+  width:20px;height:20px;border-radius:999px;display:inline-flex;align-items:center;justify-content:center;
+  font-size:0.6rem;font-weight:700;letter-spacing:0;background:rgba(117,30,27,0.08);color:var(--red);flex-shrink:0;
+}
+.nav-pill.active .nav-icon{background:rgba(255,255,255,0.18);color:#fff;}
+.nav-caret{font-size:0.62rem;line-height:1;opacity:0.9;}
+.nav-badge{
+  display:inline-flex;align-items:center;justify-content:center;padding:2px 8px;border-radius:999px;
+  background:var(--success-soft);color:var(--success);font-size:0.56rem;font-weight:700;letter-spacing:0.12em;
+}
+.nav-dropdown{
+  position:absolute;top:calc(100% + 10px);left:0;min-width:240px;padding:0.5rem;
+  border:1px solid rgba(117,30,27,0.12);border-radius:18px;background:rgba(255,255,255,0.98);
+  box-shadow:0 20px 40px rgba(24,18,15,0.14);display:none;z-index:25;
+}
+.nav-dropdown.open{display:block;}
+.nav-dropdown button{
+  width:100%;border:none;background:none;border-radius:14px;padding:0.8rem 0.85rem;text-align:left;cursor:pointer;
+  display:flex;align-items:flex-start;gap:10px;color:var(--char);transition:background 0.12s;
+}
+.nav-dropdown button:hover{background:#f7f1ea;}
+.nav-dropdown-title{display:block;font-size:0.72rem;font-weight:600;color:var(--char);margin-bottom:2px;}
+.nav-dropdown-copy{display:block;font-size:0.68rem;line-height:1.45;color:var(--gray);}
+.nav-dropdown button.active .nav-dropdown-title{color:var(--red);}
+.history-btn{display:inline-flex;}
+
+/* ── SCOUT ── */
+.scout-wrap{max-width:1000px;margin:0 auto;padding:2rem 2.5rem 2.75rem;}
+.scout-shell{display:grid;grid-template-columns:1.08fr 0.92fr;gap:1.4rem;align-items:start;}
+.scout-panel,.scout-leads{
+  background:rgba(255,255,255,0.97);border:1px solid rgba(117,30,27,0.09);border-radius:22px;
+  padding:1.4rem;box-shadow:var(--shadow);
+}
+.scout-panel-header{display:flex;align-items:flex-start;justify-content:space-between;gap:1rem;margin-bottom:1rem;}
+.scout-title{font-family:var(--font-display);font-size:1.06rem;font-weight:600;color:var(--red);margin-bottom:4px;}
+.scout-sub{font-size:0.78rem;line-height:1.55;color:var(--gray);max-width:46ch;}
+.scout-badge{padding:0.35rem 0.65rem;border-radius:999px;background:#f7efe6;color:var(--red);font-size:0.58rem;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;}
+.scout-map{height:340px;border-radius:20px;border:1px solid var(--border);overflow:hidden;background:linear-gradient(180deg,#f4ede5,#ece2d7);position:relative;}
+.scout-map-note{position:absolute;left:14px;bottom:14px;padding:8px 10px;border-radius:12px;background:rgba(255,255,255,0.92);font-size:0.68rem;color:var(--gray);box-shadow:0 8px 18px rgba(24,18,15,0.1);z-index:400;}
+.scout-grid{display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;margin:1rem 0;}
+.scout-search-row,.scout-action-row,.scout-inline-actions{display:flex;gap:8px;flex-wrap:wrap;}
+.scout-search-row input{flex:1;min-width:200px;}
+.scout-map-btn,.scout-save-btn,.scout-quiet-btn,.scout-card-btn{
+  min-height:40px;padding:0 14px;border-radius:999px;font-family:var(--font-ui);font-size:0.68rem;font-weight:600;
+  letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;transition:all 0.12s;
+}
+.scout-map-btn,.scout-save-btn{background:linear-gradient(135deg, var(--red), var(--rose));color:#fff;border:none;box-shadow:0 12px 22px rgba(117,30,27,0.18);}
+.scout-map-btn:hover,.scout-save-btn:hover{transform:translateY(-1px);box-shadow:0 16px 28px rgba(117,30,27,0.22);}
+.scout-quiet-btn,.scout-card-btn{border:1px solid var(--border);background:#fff;color:var(--char);}
+.scout-quiet-btn:hover,.scout-card-btn:hover{border-color:#b59d8d;background:#faf6f2;}
+.scout-key-row{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:1rem;padding:0.85rem 0.95rem;border:1px solid rgba(117,30,27,0.08);border-radius:18px;background:#fbf7f2;}
+.scout-key-row input{flex:1;min-width:180px;}
+.scout-meta{font-size:0.68rem;color:var(--gray);line-height:1.5;}
+.scout-results{display:flex;flex-direction:column;gap:8px;margin-top:0.9rem;}
+.scout-result-item{
+  width:100%;padding:0.85rem 0.95rem;border:1px solid rgba(117,30,27,0.1);border-radius:16px;background:#fff;cursor:pointer;
+  text-align:left;transition:border-color 0.12s, transform 0.12s;
+}
+.scout-result-item:hover{border-color:var(--red);transform:translateY(-1px);}
+.scout-result-name{display:block;font-size:0.8rem;font-weight:600;color:var(--char);margin-bottom:3px;}
+.scout-result-meta{display:block;font-size:0.7rem;color:var(--gray);line-height:1.45;}
+.scout-status{margin-top:0.7rem;font-size:0.7rem;color:var(--gray);min-height:1rem;}
+.scout-status.success{color:var(--success);}
+.scout-status.error{color:var(--red);}
+.scout-leads-header{display:flex;align-items:flex-end;justify-content:space-between;gap:1rem;margin-bottom:1rem;}
+.scout-leads-title{font-family:var(--font-display);font-size:0.98rem;font-weight:600;color:var(--red);}
+.scout-leads-sub{font-size:0.74rem;color:var(--gray);line-height:1.45;}
+.scout-leads-list{display:flex;flex-direction:column;gap:12px;}
+.scout-empty{padding:1.6rem 1rem;border:1px dashed var(--border);border-radius:18px;text-align:center;font-size:0.76rem;color:var(--gray);background:#fcfaf7;}
+.scout-card{border:1px solid rgba(117,30,27,0.1);border-radius:18px;padding:1rem;background:linear-gradient(180deg,#fff,#fcf9f5);}
+.scout-card-head{display:flex;align-items:flex-start;justify-content:space-between;gap:0.75rem;margin-bottom:0.5rem;}
+.scout-card-name{font-size:0.9rem;font-weight:600;color:var(--black);}
+.scout-card-date{font-size:0.64rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);}
+.scout-card-line{font-size:0.73rem;line-height:1.55;color:var(--gray);margin-top:0.18rem;}
+.scout-card-line strong{color:var(--char);}
+.scout-tags{display:flex;gap:6px;flex-wrap:wrap;margin-top:0.65rem;}
+.scout-tag{padding:3px 9px;border-radius:999px;background:#f2ebe4;color:var(--char);font-size:0.64rem;font-weight:600;}
+.scout-card-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:0.8rem;}
+
+.leaflet-container{font-family:var(--font-body);}
 
 /* ── RENEWAL FIELDS ── */
 .renewal-fields{display:none;background:linear-gradient(180deg, #fffaf4, #f8efe4);border:1px solid rgba(184,150,90,0.34);border-radius:18px;padding:1rem 1.25rem;margin-top:0.875rem;}
@@ -380,8 +465,19 @@ select{
   .header-top{flex-direction:column;align-items:flex-start;gap:1.25rem;}
   .logo-group{flex-wrap:wrap;}
   .header-contact{text-align:left;}
+  .mode-bar{padding:0.8rem 1rem;}
+  .mode-bar-inner{gap:8px;}
+  .nav-menu,.nav-pill,.history-btn{width:100%;}
+  .nav-pill{justify-content:space-between;}
+  .nav-dropdown{width:100%;min-width:0;}
+  .prospect-wrap,.scout-wrap,.output-section{padding-left:1rem;padding-right:1rem;}
+  .scout-shell{grid-template-columns:1fr;}
+  .scout-grid{grid-template-columns:1fr;}
+  .scout-map{height:300px;}
+  .history-drawer{width:min(100vw,400px);}
 }
 </style>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </head>
 <body>
@@ -427,17 +523,37 @@ select{
 <!-- MODE BAR -->
 <div class="mode-bar">
   <div class="mode-bar-inner">
-    <div class="mode-select-group">
-      <label class="mode-label" for="clientTypeSelect">Client Type</label>
-      <select id="clientTypeSelect" class="mode-select" onchange="setMode(this.value)">
-        <option value="new">New Prospect</option>
-        <option value="renewal">Renewal / Existing Client</option>
-      </select>
+    <div class="nav-menu" id="clientMenu">
+      <button class="nav-pill" id="clientMenuButton" onclick="toggleClientMenu(event)">
+        <span class="nav-icon">C</span>
+        <span>Client</span>
+        <span class="nav-caret">▼</span>
+      </button>
+      <div class="nav-dropdown" id="clientDropdown">
+        <button id="clientOptionNew" onclick="setMode('new')">
+          <span class="nav-icon">N</span>
+          <span>
+            <span class="nav-dropdown-title">New Prospect</span>
+            <span class="nav-dropdown-copy">Start a fresh proposal for a new client or lead.</span>
+          </span>
+        </button>
+        <button id="clientOptionRenewal" onclick="setMode('renewal')">
+          <span class="nav-icon">R</span>
+          <span>
+            <span class="nav-dropdown-title">Renewal / Existing Client</span>
+            <span class="nav-dropdown-copy">Open the builder with renewal details and upsell context.</span>
+          </span>
+        </button>
+      </div>
     </div>
-    <button class="mode-btn" id="modeProspect" onclick="setMode('prospect')">Tools</button>
-    <div class="mode-divider"></div>
-    <button class="history-btn" onclick="openHistory()">
-      <span>📋</span><span>Past Proposals</span><span id="historyCount" style="background:var(--red);color:white;border-radius:10px;padding:1px 6px;font-size:0.6rem;display:none;"></span>
+    <button class="nav-pill" id="modeScout" onclick="setMode('scout')">
+      <span class="nav-icon">S</span><span>Scout</span><span class="nav-badge">NEW</span>
+    </button>
+    <button class="nav-pill" id="modeProspect" onclick="setMode('prospect')">
+      <span class="nav-icon">T</span><span>Tools</span>
+    </button>
+    <button class="nav-pill history-btn" onclick="openHistory()">
+      <span class="nav-icon">P</span><span>Past Proposals</span><span id="historyCount" style="background:var(--red);color:white;border-radius:10px;padding:1px 6px;font-size:0.6rem;display:none;"></span>
     </button>
   </div>
 </div>
@@ -452,6 +568,70 @@ select{
     <div class="history-list" id="historyList"></div>
     <div class="history-actions">
       <button class="history-clear" onclick="clearHistory()">Clear all history</button>
+    </div>
+  </div>
+</div>
+
+<!-- SCOUT WORKSPACE -->
+<div id="scoutPanel" style="display:none;">
+  <div class="scout-wrap">
+    <div class="scout-shell">
+      <div class="scout-panel">
+        <div class="scout-panel-header">
+          <div>
+            <div class="scout-title">Scout</div>
+            <div class="scout-sub">Capture a lead quickly, save the essentials, then move straight into Pitch when you're ready to build a proposal.</div>
+          </div>
+          <span class="scout-badge">Capture → Save → Pitch</span>
+        </div>
+
+        <div class="scout-key-row">
+          <input type="text" id="scoutGoogleKey" placeholder="Optional Google Places API key">
+          <button class="scout-quiet-btn" onclick="saveScoutGoogleKey()">Save Key</button>
+          <span class="scout-meta">If available, Scout will pull richer business details from Google Places.</span>
+        </div>
+
+        <div class="scout-search-row">
+          <input type="text" id="scoutSearch" placeholder="Search for a business, address, or area" onkeydown="if(event.key==='Enter')searchScoutBusinesses()">
+          <button class="scout-map-btn" onclick="searchScoutBusinesses()">Search</button>
+          <button class="scout-quiet-btn" onclick="useScoutLocation()">Use My Location</button>
+        </div>
+
+        <div class="scout-status" id="scoutStatus">Tap the map to drop a pin, or search to pull business details into the form.</div>
+        <div class="scout-map" id="scoutMap">
+          <div class="scout-map-note">Manual pin mode is always on. Click anywhere to capture a location fast.</div>
+        </div>
+        <div class="scout-results" id="scoutResults"></div>
+
+        <div class="scout-grid">
+          <div class="field"><label>Business Name</label><input type="text" id="scoutBusinessName" placeholder="Business or venue name"></div>
+          <div class="field"><label>Category / Type</label><input type="text" id="scoutCategory" placeholder="Restaurant, hotel, design showroom..."></div>
+          <div class="field"><label>Phone</label><input type="text" id="scoutPhone" placeholder="Phone number"></div>
+          <div class="field"><label>Website</label><input type="text" id="scoutWebsite" placeholder="https://example.com"></div>
+          <div class="field"><label>Address</label><input type="text" id="scoutAddress" placeholder="Street address or area"></div>
+          <div class="field"><label>Google Maps Link</label><input type="text" id="scoutMapsLink" placeholder="Maps link"></div>
+        </div>
+
+        <div class="field"><label>Hours</label><textarea id="scoutHours" placeholder="Auto-filled if available"></textarea></div>
+        <div class="field"><label>Notes</label><textarea id="scoutNotes" placeholder="Quick context, owner notes, event angle, proposal ideas..."></textarea></div>
+        <div class="field"><label>Tags</label><input type="text" id="scoutTags" placeholder="Comma-separated tags, e.g. event-friendly, luxury traveler"></div>
+
+        <div class="scout-action-row">
+          <button class="scout-save-btn" id="scoutSaveButton" onclick="saveScoutLead()">Save Lead</button>
+          <button class="scout-quiet-btn" onclick="clearScoutForm()">Clear</button>
+        </div>
+      </div>
+
+      <div class="scout-leads">
+        <div class="scout-leads-header">
+          <div>
+            <div class="scout-leads-title">Saved Leads</div>
+            <div class="scout-leads-sub">Everything stays local in this browser so the workflow stays fast and lightweight.</div>
+          </div>
+          <div class="scout-meta" id="scoutLeadCount">0 saved</div>
+        </div>
+        <div class="scout-leads-list" id="scoutLeadsList"></div>
+      </div>
     </div>
   </div>
 </div>
@@ -1567,31 +1747,458 @@ function getSelectedSpecLinks() {
 // Module-level storage for current proposal line items
 let lastProposalLines = [];
 let lastProposalTotal = 0;
+const SCOUT_LEADS_KEY = 'tp_scout_leads';
+const SCOUT_GOOGLE_KEY = 'tp_scout_google_key';
+let scoutMap = null;
+let scoutMarker = null;
+let scoutSearchResults = [];
+let scoutLeads = [];
+let editingScoutLeadId = null;
+let scoutPlacesPromise = null;
+let scoutPlacesService = null;
 
 build();
 
 // ── MODE ──────────────────────────────────────────────
 let currentMode = 'new';
+function toggleClientMenu(event) {
+  if (event) event.stopPropagation();
+  document.getElementById('clientDropdown')?.classList.toggle('open');
+}
+function closeClientMenu() {
+  document.getElementById('clientDropdown')?.classList.remove('open');
+}
+function updateNavState(mode) {
+  const isClientMode = mode === 'new' || mode === 'renewal';
+  document.getElementById('clientMenuButton')?.classList.toggle('active', isClientMode);
+  document.getElementById('modeScout')?.classList.toggle('active', mode === 'scout');
+  document.getElementById('modeProspect')?.classList.toggle('active', mode === 'prospect');
+  document.getElementById('clientOptionNew')?.classList.toggle('active', mode === 'new');
+  document.getElementById('clientOptionRenewal')?.classList.toggle('active', mode === 'renewal');
+}
 function setMode(mode) {
   currentMode = mode;
-  document.getElementById('modeProspect').classList.toggle('active', mode === 'prospect');
+  closeClientMenu();
+  updateNavState(mode);
   const rf = document.getElementById('renewalFields');
-  const clientTypeSelect = document.getElementById('clientTypeSelect');
-  if (clientTypeSelect && mode !== 'prospect') {
-    clientTypeSelect.value = mode;
-  }
-  rf.classList.toggle('visible', mode === 'renewal');
-  // Show/hide main builder vs prospect panel
+  if (rf) rf.classList.toggle('visible', mode === 'renewal');
   const mb = document.getElementById('mainBuilder');
+  const sp = document.getElementById('scoutPanel');
   const pp = document.getElementById('prospectPanel');
-  if (mode === 'prospect') {
-    mb.style.display = 'none';
-    pp.style.display = 'block';
-  } else {
-    mb.style.display = 'block';
-    pp.style.display = 'none';
+  const out = document.getElementById('outputSection');
+  const showBuilder = mode === 'new' || mode === 'renewal';
+  if (mb) mb.style.display = showBuilder ? 'block' : 'none';
+  if (sp) sp.style.display = mode === 'scout' ? 'block' : 'none';
+  if (pp) pp.style.display = mode === 'prospect' ? 'block' : 'none';
+  if (out) out.style.display = showBuilder ? '' : 'none';
+  if (mode === 'scout' && scoutMap) {
+    setTimeout(() => scoutMap.invalidateSize(), 120);
   }
 }
+document.addEventListener('click', function(event) {
+  const menu = document.getElementById('clientMenu');
+  if (menu && !menu.contains(event.target)) closeClientMenu();
+});
+
+// ── SCOUT ─────────────────────────────────────────────
+function setScoutStatus(message, tone) {
+  const el = document.getElementById('scoutStatus');
+  if (!el) return;
+  el.textContent = message || '';
+  el.className = 'scout-status' + (tone ? ' ' + tone : '');
+}
+function escapeHtml(value) {
+  return String(value || '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+function parseScoutTags(raw) {
+  return (raw || '')
+    .split(',')
+    .map(tag => tag.trim())
+    .filter(Boolean);
+}
+function loadScoutLeads() {
+  try {
+    scoutLeads = JSON.parse(localStorage.getItem(SCOUT_LEADS_KEY) || '[]');
+  } catch (err) {
+    scoutLeads = [];
+  }
+}
+function persistScoutLeads() {
+  localStorage.setItem(SCOUT_LEADS_KEY, JSON.stringify(scoutLeads));
+}
+function renderScoutLeads() {
+  const list = document.getElementById('scoutLeadsList');
+  const count = document.getElementById('scoutLeadCount');
+  if (!list || !count) return;
+  count.textContent = scoutLeads.length + (scoutLeads.length === 1 ? ' lead saved' : ' leads saved');
+  if (!scoutLeads.length) {
+    list.innerHTML = '<div class="scout-empty">No leads saved yet. Search, pin, jot notes, then save a lead to keep the flow moving.</div>';
+    return;
+  }
+  list.innerHTML = scoutLeads.map(lead => `
+    <div class="scout-card">
+      <div class="scout-card-head">
+        <div>
+          <div class="scout-card-name">${escapeHtml(lead.name || 'Untitled Lead')}</div>
+          <div class="scout-card-line">${escapeHtml(lead.address || 'Address not saved')}</div>
+        </div>
+        <div class="scout-card-date">${escapeHtml(lead.dateAdded || '')}</div>
+      </div>
+      ${lead.website ? `<div class="scout-card-line"><strong>Website:</strong> ${escapeHtml(lead.website)}</div>` : ''}
+      ${lead.phone ? `<div class="scout-card-line"><strong>Phone:</strong> ${escapeHtml(lead.phone)}</div>` : ''}
+      ${lead.category ? `<div class="scout-card-line"><strong>Category:</strong> ${escapeHtml(lead.category)}</div>` : ''}
+      ${lead.notes ? `<div class="scout-card-line"><strong>Notes:</strong> ${escapeHtml(lead.notes)}</div>` : ''}
+      ${lead.tags && lead.tags.length ? `<div class="scout-tags">${lead.tags.map(tag => `<span class="scout-tag">${escapeHtml(tag)}</span>`).join('')}</div>` : ''}
+      <div class="scout-card-actions">
+        <button class="scout-card-btn" onclick="editScoutLead('${lead.id}')">Edit</button>
+        <button class="scout-card-btn" onclick="deleteScoutLead('${lead.id}')">Delete</button>
+        <button class="scout-save-btn" onclick="startProposalFromLead('${lead.id}')">Start Proposal</button>
+      </div>
+    </div>
+  `).join('');
+}
+function getScoutField(id) {
+  return document.getElementById(id)?.value.trim() || '';
+}
+function setScoutField(id, value) {
+  const field = document.getElementById(id);
+  if (field) field.value = value || '';
+}
+function clearScoutForm(resetStatus) {
+  editingScoutLeadId = null;
+  ['scoutBusinessName','scoutCategory','scoutPhone','scoutWebsite','scoutAddress','scoutMapsLink','scoutHours','scoutNotes','scoutTags'].forEach(id => setScoutField(id, ''));
+  const saveButton = document.getElementById('scoutSaveButton');
+  if (saveButton) saveButton.textContent = 'Save Lead';
+  if (resetStatus) setScoutStatus('Scout form cleared. Tap the map or search to capture a lead.', '');
+}
+function saveScoutGoogleKey() {
+  const key = getScoutField('scoutGoogleKey');
+  if (key) {
+    localStorage.setItem(SCOUT_GOOGLE_KEY, key);
+    scoutPlacesPromise = null;
+    scoutPlacesService = null;
+    setScoutStatus('Google Places key saved. Scout will use richer place details on the next search.', 'success');
+    ensureScoutPlaces().catch(err => setScoutStatus(err.message, 'error'));
+  } else {
+    localStorage.removeItem(SCOUT_GOOGLE_KEY);
+    scoutPlacesPromise = null;
+    scoutPlacesService = null;
+    setScoutStatus('Google Places key removed. Scout will use map search and manual entry.', '');
+  }
+}
+function ensureScoutPlaces() {
+  const key = localStorage.getItem(SCOUT_GOOGLE_KEY);
+  if (!key) return Promise.reject(new Error('No Google Places key saved yet.'));
+  if (window.google && google.maps && google.maps.places) return Promise.resolve(google.maps);
+  if (scoutPlacesPromise) return scoutPlacesPromise;
+  scoutPlacesPromise = new Promise((resolve, reject) => {
+    const callbackName = '__scoutPlacesReady_' + Date.now();
+    window[callbackName] = function() {
+      delete window[callbackName];
+      resolve(google.maps);
+    };
+    const script = document.createElement('script');
+    script.src = 'https://maps.googleapis.com/maps/api/js?key=' + encodeURIComponent(key) + '&libraries=places&callback=' + callbackName;
+    script.async = true;
+    script.onerror = function() {
+      delete window[callbackName];
+      scoutPlacesPromise = null;
+      reject(new Error('Google Places failed to load. Check the API key and allowed domains.'));
+    };
+    document.head.appendChild(script);
+  });
+  return scoutPlacesPromise;
+}
+function getScoutPlacesService() {
+  if (!window.google || !google.maps || !google.maps.places) return null;
+  if (!scoutPlacesService) scoutPlacesService = new google.maps.places.PlacesService(document.createElement('div'));
+  return scoutPlacesService;
+}
+function initScoutMap() {
+  if (scoutMap || !window.L || !document.getElementById('scoutMap')) return;
+  scoutMap = L.map('scoutMap', { zoomControl: true }).setView([30.2672, -97.7431], 12);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '&copy; OpenStreetMap contributors'
+  }).addTo(scoutMap);
+  scoutMap.on('click', function(event) {
+    setScoutMarker(event.latlng.lat, event.latlng.lng, { manual: true });
+  });
+}
+function setScoutMarker(lat, lng, options) {
+  if (!scoutMap) return;
+  const markerOptions = options || {};
+  if (!scoutMarker) {
+    scoutMarker = L.marker([lat, lng], { draggable: true }).addTo(scoutMap);
+    scoutMarker.on('dragend', function(e) {
+      const pos = e.target.getLatLng();
+      setScoutMarker(pos.lat, pos.lng, { manual: true, center: false });
+    });
+  } else {
+    scoutMarker.setLatLng([lat, lng]);
+  }
+  if (markerOptions.center !== false) scoutMap.setView([lat, lng], Math.max(scoutMap.getZoom(), 14));
+  if (markerOptions.manual) {
+    const mapsLink = 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(lat + ',' + lng);
+    setScoutField('scoutMapsLink', mapsLink);
+    reverseScoutLookup(lat, lng);
+  }
+}
+async function reverseScoutLookup(lat, lng) {
+  try {
+    const res = await fetch('https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=' + encodeURIComponent(lat) + '&lon=' + encodeURIComponent(lng));
+    const data = await res.json();
+    if (!getScoutField('scoutAddress') && data.display_name) setScoutField('scoutAddress', data.display_name);
+    setScoutStatus('Pin dropped. Add a few notes and save the lead when you are ready.', '');
+  } catch (err) {
+    setScoutStatus('Pin dropped. Reverse lookup could not load, but you can still save the lead manually.', 'error');
+  }
+}
+function normalizeScoutSearchResults(items) {
+  scoutSearchResults = items || [];
+  const wrap = document.getElementById('scoutResults');
+  if (!wrap) return;
+  if (!scoutSearchResults.length) {
+    wrap.innerHTML = '';
+    return;
+  }
+  wrap.innerHTML = scoutSearchResults.map((item, index) => `
+    <button class="scout-result-item" onclick="selectScoutResult(${index})">
+      <span class="scout-result-name">${escapeHtml(item.name || 'Unnamed result')}</span>
+      <span class="scout-result-meta">${escapeHtml(item.meta || item.address || '')}</span>
+    </button>
+  `).join('');
+}
+async function searchScoutBusinesses() {
+  const query = getScoutField('scoutSearch');
+  if (!query) {
+    setScoutStatus('Enter a business name, address, or area to search.', 'error');
+    return;
+  }
+  setScoutStatus('Searching nearby businesses...', '');
+  normalizeScoutSearchResults([]);
+  const hasGoogleKey = !!localStorage.getItem(SCOUT_GOOGLE_KEY);
+  if (hasGoogleKey) {
+    try {
+      await ensureScoutPlaces();
+      const service = getScoutPlacesService();
+      const center = scoutMap ? scoutMap.getCenter() : { lat: 30.2672, lng: -97.7431 };
+      const results = await new Promise((resolve, reject) => {
+        service.textSearch({
+          query: query,
+          location: new google.maps.LatLng(center.lat, center.lng),
+          radius: 8000
+        }, function(found, status) {
+          if (status !== google.maps.places.PlacesServiceStatus.OK || !found || !found.length) {
+            reject(new Error('No Google Places results found for that search.'));
+            return;
+          }
+          resolve(found.slice(0, 8));
+        });
+      });
+      normalizeScoutSearchResults(results.map(place => ({
+        source: 'google',
+        placeId: place.place_id,
+        name: place.name,
+        address: place.formatted_address || '',
+        meta: [place.formatted_address, place.types?.[0]].filter(Boolean).join(' • '),
+        lat: place.geometry?.location?.lat?.(),
+        lng: place.geometry?.location?.lng?.()
+      })));
+      setScoutStatus('Select a result to pull richer business details into the lead form.', '');
+      return;
+    } catch (err) {
+      setScoutStatus('Google Places search missed. Falling back to map search results.', 'error');
+    }
+  }
+  try {
+    const res = await fetch('https://nominatim.openstreetmap.org/search?format=jsonv2&limit=8&countrycodes=us&q=' + encodeURIComponent(query));
+    const data = await res.json();
+    normalizeScoutSearchResults((data || []).map(item => ({
+      source: 'osm',
+      name: item.display_name ? item.display_name.split(',')[0] : 'Map result',
+      address: item.display_name || '',
+      meta: [item.type, item.display_name].filter(Boolean).join(' • '),
+      category: item.type || '',
+      lat: parseFloat(item.lat),
+      lng: parseFloat(item.lon),
+      mapsLink: 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent((item.display_name || '') + ' ' + item.lat + ',' + item.lon)
+    })));
+    setScoutStatus(data.length ? 'Search results ready. Select one to prefill the lead form.' : 'No results found. Drop a pin and enter the lead manually.', data.length ? '' : 'error');
+  } catch (err) {
+    setScoutStatus('Search could not load right now. You can still use manual pin mode and save the lead.', 'error');
+  }
+}
+async function selectScoutResult(index) {
+  const item = scoutSearchResults[index];
+  if (!item) return;
+  if (item.lat && item.lng) setScoutMarker(item.lat, item.lng, { center: true });
+  if (item.source === 'google' && item.placeId) {
+    try {
+      await ensureScoutPlaces();
+      const service = getScoutPlacesService();
+      const details = await new Promise((resolve, reject) => {
+        service.getDetails({
+          placeId: item.placeId,
+          fields: ['name','formatted_address','formatted_phone_number','website','types','url','opening_hours','geometry']
+        }, function(place, status) {
+          if (status !== google.maps.places.PlacesServiceStatus.OK || !place) {
+            reject(new Error('Google Places details were unavailable.'));
+            return;
+          }
+          resolve(place);
+        });
+      });
+      populateScoutLeadForm({
+        name: details.name,
+        address: details.formatted_address,
+        phone: details.formatted_phone_number,
+        website: details.website,
+        category: details.types?.[0]?.replace(/_/g, ' '),
+        mapsLink: details.url,
+        hours: details.opening_hours?.weekday_text?.join('\n'),
+        lat: details.geometry?.location?.lat?.(),
+        lng: details.geometry?.location?.lng?.()
+      });
+      setScoutStatus('Business details loaded from Google Places. Add notes or tags, then save the lead.', 'success');
+      return;
+    } catch (err) {
+      setScoutStatus(err.message, 'error');
+    }
+  }
+  populateScoutLeadForm(item);
+  setScoutStatus('Lead details loaded. Add quick context, then save when ready.', '');
+}
+function populateScoutLeadForm(data) {
+  setScoutField('scoutBusinessName', data.name || '');
+  setScoutField('scoutCategory', data.category || '');
+  setScoutField('scoutPhone', data.phone || '');
+  setScoutField('scoutWebsite', data.website || '');
+  setScoutField('scoutAddress', data.address || '');
+  setScoutField('scoutMapsLink', data.mapsLink || '');
+  setScoutField('scoutHours', Array.isArray(data.hours) ? data.hours.join('\n') : (data.hours || ''));
+  if (data.lat && data.lng) setScoutMarker(data.lat, data.lng, { center: true });
+}
+function saveScoutLead() {
+  const name = getScoutField('scoutBusinessName');
+  if (!name) {
+    setScoutStatus('Add at least a business name before saving the lead.', 'error');
+    return;
+  }
+  const existingLead = scoutLeads.find(lead => lead.id === editingScoutLeadId);
+  const lead = {
+    id: editingScoutLeadId || String(Date.now()),
+    name: name,
+    category: getScoutField('scoutCategory'),
+    phone: getScoutField('scoutPhone'),
+    website: getScoutField('scoutWebsite'),
+    address: getScoutField('scoutAddress'),
+    mapsLink: getScoutField('scoutMapsLink'),
+    hours: getScoutField('scoutHours'),
+    notes: getScoutField('scoutNotes'),
+    tags: parseScoutTags(getScoutField('scoutTags')),
+    dateAdded: existingLead?.dateAdded || new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+  };
+  if (editingScoutLeadId) {
+    scoutLeads = scoutLeads.map(item => item.id === editingScoutLeadId ? lead : item);
+  } else {
+    scoutLeads.unshift(lead);
+  }
+  persistScoutLeads();
+  renderScoutLeads();
+  clearScoutForm(false);
+  setScoutStatus('Lead saved. Use Start Proposal whenever you want to move it into Pitch.', 'success');
+}
+function editScoutLead(id) {
+  const lead = scoutLeads.find(item => item.id === id);
+  if (!lead) return;
+  editingScoutLeadId = id;
+  populateScoutLeadForm(lead);
+  setScoutField('scoutNotes', lead.notes || '');
+  setScoutField('scoutTags', (lead.tags || []).join(', '));
+  const saveButton = document.getElementById('scoutSaveButton');
+  if (saveButton) saveButton.textContent = 'Update Lead';
+  setMode('scout');
+  setScoutStatus('Lead loaded for editing.', '');
+}
+function deleteScoutLead(id) {
+  const lead = scoutLeads.find(item => item.id === id);
+  if (!lead) return;
+  if (!confirm('Delete this lead? This cannot be undone.')) return;
+  scoutLeads = scoutLeads.filter(item => item.id !== id);
+  persistScoutLeads();
+  renderScoutLeads();
+  if (editingScoutLeadId === id) clearScoutForm(false);
+  setScoutStatus('Lead deleted.', '');
+}
+function mapScoutCategoryToIndustry(category) {
+  const raw = (category || '').toLowerCase();
+  const options = Array.from(document.querySelectorAll('#ind option')).map(opt => opt.value).filter(Boolean);
+  const directMatch = options.find(option => option.toLowerCase() === raw);
+  if (directMatch) return directMatch;
+  const keywordMap = [
+    { match: ['restaurant','bar','cafe','food'], value: 'Restaurant / Food & Beverage / Bar' },
+    { match: ['hotel','resort','travel'], value: 'Hotel / Resort / Travel' },
+    { match: ['spa','wellness','fitness'], value: 'Wellness / Fitness / Spa' },
+    { match: ['med spa','aesthetic','plastic'], value: 'Med Spa / Aesthetics / Plastic Surgery' },
+    { match: ['jewelry','watch','accessory'], value: 'Jewelry / Watches / Fine Accessories' },
+    { match: ['real_estate','broker','property','realtor'], value: 'Real Estate — Brokerage / Agent' },
+    { match: ['interior','furniture','home goods','showroom'], value: 'Interior Design / Home Furnishings / Showroom' },
+    { match: ['architecture','builder','remodel'], value: 'Architecture / Home Builder / Remodeling' },
+    { match: ['gallery','museum','theater','arts'], value: 'Arts / Gallery / Museum / Theater' },
+    { match: ['bank','finance','wealth'], value: 'Finance / Wealth Management / Banking' }
+  ];
+  const found = keywordMap.find(entry => entry.match.some(term => raw.includes(term)));
+  return found ? found.value : 'Other';
+}
+function startProposalFromLead(id) {
+  const lead = scoutLeads.find(item => item.id === id);
+  if (!lead) return;
+  setMode('new');
+  document.getElementById('cn').value = lead.name || '';
+  document.getElementById('wb').value = lead.website || '';
+  document.getElementById('ind').value = mapScoutCategoryToIndustry(lead.category);
+  document.getElementById('rel').value = 'Warm lead';
+  const notes = [
+    lead.notes,
+    lead.address ? 'Scout address: ' + lead.address : '',
+    lead.phone ? 'Phone: ' + lead.phone : '',
+    lead.mapsLink ? 'Google Maps: ' + lead.mapsLink : '',
+    lead.tags && lead.tags.length ? 'Tags: ' + lead.tags.join(', ') : ''
+  ].filter(Boolean).join(' | ');
+  document.getElementById('gl').value = notes;
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+function useScoutLocation() {
+  if (!navigator.geolocation) {
+    setScoutStatus('Location access is not available in this browser. Drop a manual pin instead.', 'error');
+    return;
+  }
+  setScoutStatus('Finding your location...', '');
+  navigator.geolocation.getCurrentPosition(function(position) {
+    const lat = position.coords.latitude;
+    const lng = position.coords.longitude;
+    if (scoutMap) scoutMap.setView([lat, lng], 15);
+    setScoutMarker(lat, lng, { manual: true });
+    setScoutStatus('Current location loaded. Tap nearby businesses or add notes and save the lead.', 'success');
+  }, function() {
+    setScoutStatus('Location access was blocked. You can still drop a pin manually.', 'error');
+  }, { enableHighAccuracy: true, timeout: 12000 });
+}
+function initScout() {
+  const key = localStorage.getItem(SCOUT_GOOGLE_KEY) || '';
+  setScoutField('scoutGoogleKey', key);
+  loadScoutLeads();
+  renderScoutLeads();
+  initScoutMap();
+  if (!window.L) setScoutStatus('Map library could not load. You can still capture leads manually.', 'error');
+}
+initScout();
+setMode('new');
 
 // ── OUTREACH EMAIL TYPE SWITCHER ──────────────────────
 let currentEmailType = 'cold';
@@ -1925,6 +2532,7 @@ function updateHistoryCount() {
   else { el.style.display = 'none'; }
 }
 function openHistory() {
+  closeClientMenu();
   renderHistoryList();
   document.getElementById('historyOverlay').classList.add('open');
 }
