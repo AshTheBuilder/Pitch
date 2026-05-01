@@ -352,11 +352,6 @@ select{
 }
 .nav-pill:hover{border-color:#b59d8d;background:#fff;}
 .nav-pill.active{background:linear-gradient(135deg, var(--red), var(--rose));color:#fff;border-color:transparent;box-shadow:0 14px 28px rgba(117,30,27,0.18);}
-.nav-icon{
-  width:20px;height:20px;border-radius:999px;display:inline-flex;align-items:center;justify-content:center;
-  font-size:0.6rem;font-weight:700;letter-spacing:0;background:rgba(117,30,27,0.08);color:var(--red);flex-shrink:0;
-}
-.nav-pill.active .nav-icon{background:rgba(255,255,255,0.18);color:#fff;}
 .nav-caret{font-size:0.62rem;line-height:1;opacity:0.9;}
 .nav-badge{
   display:inline-flex;align-items:center;justify-content:center;padding:2px 8px;border-radius:999px;
@@ -433,6 +428,53 @@ select{
 
 .leaflet-container{font-family:var(--font-body);}
 
+/* ── MEETING MODE ── */
+.meeting-wrap{max-width:1000px;margin:0 auto;padding:2rem 2.5rem 2.75rem;}
+.meeting-shell{display:grid;grid-template-columns:1.08fr 0.92fr;gap:1.4rem;align-items:start;}
+.meeting-panel,.meeting-saved{
+  background:rgba(255,255,255,0.97);border:1px solid rgba(117,30,27,0.09);border-radius:22px;
+  padding:1.4rem;box-shadow:var(--shadow);
+}
+.meeting-header{display:flex;align-items:flex-start;justify-content:space-between;gap:1rem;margin-bottom:1rem;}
+.meeting-title{font-family:var(--font-display);font-size:1.06rem;font-weight:600;color:var(--red);margin-bottom:4px;}
+.meeting-sub{font-size:0.78rem;line-height:1.55;color:var(--gray);max-width:46ch;}
+.meeting-badge{padding:0.35rem 0.65rem;border-radius:999px;background:#f7efe6;color:var(--red);font-size:0.58rem;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;}
+.meeting-grid{display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;}
+.meeting-checklist{
+  margin:1rem 0;padding:1rem 1.05rem;border:1px solid rgba(117,30,27,0.08);border-radius:18px;background:#fbf7f2;
+}
+.meeting-checklist-title{font-size:0.62rem;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:var(--red);display:block;margin-bottom:0.75rem;}
+.meeting-checklist-grid{display:grid;grid-template-columns:1fr 1fr;gap:0.55rem 1rem;}
+.meeting-check{
+  display:flex;align-items:flex-start;gap:8px;font-size:0.74rem;color:var(--char);line-height:1.4;cursor:pointer;
+}
+.meeting-check input{margin-top:2px;accent-color:var(--red);width:14px;height:14px;flex-shrink:0;}
+.meeting-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:1rem;}
+.meeting-btn,.meeting-quiet-btn{
+  min-height:40px;padding:0 14px;border-radius:999px;font-family:var(--font-ui);font-size:0.68rem;font-weight:600;
+  letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;transition:all 0.12s;
+}
+.meeting-btn{background:linear-gradient(135deg, var(--red), var(--rose));color:#fff;border:none;box-shadow:0 12px 22px rgba(117,30,27,0.18);}
+.meeting-btn:hover{transform:translateY(-1px);box-shadow:0 16px 28px rgba(117,30,27,0.22);}
+.meeting-quiet-btn{border:1px solid var(--border);background:#fff;color:var(--char);}
+.meeting-quiet-btn:hover{border-color:#b59d8d;background:#faf6f2;}
+.meeting-status{margin-top:0.7rem;font-size:0.7rem;color:var(--gray);min-height:1rem;}
+.meeting-status.success{color:var(--success);}
+.meeting-status.error{color:var(--red);}
+.meeting-saved-header{display:flex;align-items:flex-end;justify-content:space-between;gap:1rem;margin-bottom:1rem;}
+.meeting-saved-title{font-family:var(--font-display);font-size:0.98rem;font-weight:600;color:var(--red);}
+.meeting-saved-sub{font-size:0.74rem;color:var(--gray);line-height:1.45;}
+.meeting-saved-count{font-size:0.68rem;color:var(--gray);}
+.meeting-saved-list{display:flex;flex-direction:column;gap:12px;}
+.meeting-empty{padding:1.6rem 1rem;border:1px dashed var(--border);border-radius:18px;text-align:center;font-size:0.76rem;color:var(--gray);background:#fcfaf7;}
+.meeting-card{border:1px solid rgba(117,30,27,0.1);border-radius:18px;padding:1rem;background:linear-gradient(180deg,#fff,#fcf9f5);}
+.meeting-card-head{display:flex;align-items:flex-start;justify-content:space-between;gap:0.75rem;margin-bottom:0.45rem;}
+.meeting-card-name{font-size:0.88rem;font-weight:600;color:var(--black);}
+.meeting-card-date{font-size:0.64rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);}
+.meeting-card-line{font-size:0.73rem;line-height:1.55;color:var(--gray);margin-top:0.18rem;}
+.meeting-card-line strong{color:var(--char);}
+.meeting-card-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:0.8rem;}
+
 /* ── RENEWAL FIELDS ── */
 .renewal-fields{display:none;background:linear-gradient(180deg, #fffaf4, #f8efe4);border:1px solid rgba(184,150,90,0.34);border-radius:18px;padding:1rem 1.25rem;margin-top:0.875rem;}
 .renewal-fields.visible{display:block;}
@@ -470,9 +512,9 @@ select{
   .nav-menu,.nav-pill,.history-btn{width:100%;}
   .nav-pill{justify-content:space-between;}
   .nav-dropdown{width:100%;min-width:0;}
-  .prospect-wrap,.scout-wrap,.output-section{padding-left:1rem;padding-right:1rem;}
-  .scout-shell{grid-template-columns:1fr;}
-  .scout-grid{grid-template-columns:1fr;}
+  .prospect-wrap,.scout-wrap,.meeting-wrap,.output-section{padding-left:1rem;padding-right:1rem;}
+  .scout-shell,.meeting-shell{grid-template-columns:1fr;}
+  .scout-grid,.meeting-grid,.meeting-checklist-grid{grid-template-columns:1fr;}
   .scout-map{height:300px;}
   .history-drawer{width:min(100vw,400px);}
 }
@@ -525,20 +567,17 @@ select{
   <div class="mode-bar-inner">
     <div class="nav-menu" id="clientMenu">
       <button class="nav-pill" id="clientMenuButton" onclick="toggleClientMenu(event)">
-        <span class="nav-icon">C</span>
         <span>Client</span>
         <span class="nav-caret">▼</span>
       </button>
       <div class="nav-dropdown" id="clientDropdown">
         <button id="clientOptionNew" onclick="setMode('new')">
-          <span class="nav-icon">N</span>
           <span>
             <span class="nav-dropdown-title">New Prospect</span>
             <span class="nav-dropdown-copy">Start a fresh proposal for a new client or lead.</span>
           </span>
         </button>
         <button id="clientOptionRenewal" onclick="setMode('renewal')">
-          <span class="nav-icon">R</span>
           <span>
             <span class="nav-dropdown-title">Renewal / Existing Client</span>
             <span class="nav-dropdown-copy">Open the builder with renewal details and upsell context.</span>
@@ -547,13 +586,16 @@ select{
       </div>
     </div>
     <button class="nav-pill" id="modeScout" onclick="setMode('scout')">
-      <span class="nav-icon">S</span><span>Scout</span><span class="nav-badge">NEW</span>
+      <span>Scout</span><span class="nav-badge">NEW</span>
+    </button>
+    <button class="nav-pill" id="modeMeeting" onclick="setMode('meeting')">
+      <span>Meeting Mode</span>
     </button>
     <button class="nav-pill" id="modeProspect" onclick="setMode('prospect')">
-      <span class="nav-icon">T</span><span>Tools</span>
+      <span>Tools</span>
     </button>
     <button class="nav-pill history-btn" onclick="openHistory()">
-      <span class="nav-icon">P</span><span>Past Proposals</span><span id="historyCount" style="background:var(--red);color:white;border-radius:10px;padding:1px 6px;font-size:0.6rem;display:none;"></span>
+      <span>Past Proposals</span><span id="historyCount" style="background:var(--red);color:white;border-radius:10px;padding:1px 6px;font-size:0.6rem;display:none;"></span>
     </button>
   </div>
 </div>
@@ -631,6 +673,81 @@ select{
           <div class="scout-meta" id="scoutLeadCount">0 saved</div>
         </div>
         <div class="scout-leads-list" id="scoutLeadsList"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MEETING MODE -->
+<div id="meetingPanel" style="display:none;">
+  <div class="meeting-wrap">
+    <div class="meeting-shell">
+      <div class="meeting-panel">
+        <div class="meeting-header">
+          <div>
+            <div class="meeting-title">Meeting Mode</div>
+            <div class="meeting-sub">Use this during calls or in-person visits to capture what matters, then push the important pieces straight into a proposal draft.</div>
+          </div>
+          <span class="meeting-badge">Live notes → Pitch</span>
+        </div>
+
+        <div class="meeting-grid">
+          <div class="field"><label>Client / Company Name</label><input type="text" id="meetingCompany" placeholder="Company or client name"></div>
+          <div class="field"><label>Contact Name</label><input type="text" id="meetingContact" placeholder="Primary contact"></div>
+          <div class="field"><label>Meeting Type</label>
+            <select id="meetingType">
+              <option>New Prospect</option>
+              <option>Renewal</option>
+              <option>Existing Client</option>
+              <option>Discovery Call</option>
+              <option>In-Person Visit</option>
+            </select>
+          </div>
+          <div class="field"><label>Meeting Date</label><input type="text" id="meetingDate" placeholder="Auto-filled to today"></div>
+        </div>
+
+        <div class="field"><label>Meeting Notes</label><textarea id="meetingNotes" style="min-height:180px;" placeholder="Capture the conversation live: goals, objections, products they asked about, timing, stakeholder details, and anything that should shape the proposal."></textarea></div>
+
+        <div class="meeting-checklist">
+          <span class="meeting-checklist-title">Quick Prompt Checklist</span>
+          <div class="meeting-checklist-grid">
+            <label class="meeting-check"><input type="checkbox" data-meeting-check="Business goals"> <span>Business goals</span></label>
+            <label class="meeting-check"><input type="checkbox" data-meeting-check="Target audience"> <span>Target audience</span></label>
+            <label class="meeting-check"><input type="checkbox" data-meeting-check="Budget range"> <span>Budget range</span></label>
+            <label class="meeting-check"><input type="checkbox" data-meeting-check="Timing / deadline"> <span>Timing / deadline</span></label>
+            <label class="meeting-check"><input type="checkbox" data-meeting-check="Products of interest"> <span>Products of interest</span></label>
+            <label class="meeting-check"><input type="checkbox" data-meeting-check="Markets of interest"> <span>Markets of interest</span></label>
+            <label class="meeting-check"><input type="checkbox" data-meeting-check="Decision maker"> <span>Decision maker</span></label>
+            <label class="meeting-check"><input type="checkbox" data-meeting-check="Creative assets available"> <span>Creative assets available</span></label>
+            <label class="meeting-check"><input type="checkbox" data-meeting-check="Pain points / objections"> <span>Pain points / objections</span></label>
+            <label class="meeting-check"><input type="checkbox" data-meeting-check="Follow-up needed"> <span>Follow-up needed</span></label>
+          </div>
+        </div>
+
+        <div class="meeting-grid">
+          <div class="field"><label>Products of Interest</label><input type="text" id="meetingProductsInterest" placeholder="Products or packages they mentioned"></div>
+          <div class="field"><label>Markets of Interest</label><input type="text" id="meetingMarketsInterest" placeholder="Austin, Dallas, Houston, Round Top..."></div>
+          <div class="field"><label>Next Steps</label><input type="text" id="meetingNextSteps" placeholder="What needs to happen next"></div>
+          <div class="field"><label>Follow-Up Date</label><input type="text" id="meetingFollowupDate" placeholder="Target follow-up date"></div>
+        </div>
+
+        <div class="meeting-actions">
+          <button class="meeting-btn" id="meetingSaveButton" onclick="saveMeetingNote()">Save Meeting Notes</button>
+          <button class="meeting-btn" onclick="startProposalFromCurrentMeeting()">Start Proposal From Notes</button>
+          <button class="meeting-quiet-btn" onclick="clearMeetingForm(true)">Clear</button>
+        </div>
+        <div class="meeting-status" id="meetingStatus">Meeting notes save locally in this browser so you can reopen them fast.</div>
+      </div>
+
+      <div class="meeting-saved">
+        <div class="meeting-saved-header">
+          <div>
+            <div class="meeting-saved-title">Saved Meetings</div>
+            <div class="meeting-saved-sub">Reopen a past meeting, update it, or jump straight into a proposal when you are ready.</div>
+          </div>
+          <div class="meeting-saved-count" id="meetingSavedCount">0 meetings</div>
+        </div>
+        <div class="meeting-saved-list" id="meetingSavedList"></div>
       </div>
     </div>
   </div>
@@ -1150,7 +1267,7 @@ const printMkts=new Set(),digMkts=new Set();
 function toggleMkt(type,name){const isP=type==='print';const set=isP?printMkts:digMkts;const idMap=isP?{'Dallas':'pm-dallas','Houston':'pm-houston'}:{'Dallas':'dm-dallas','Houston':'dm-houston','Fort Worth':'dm-ftworth','The Woodlands':'dm-woodlands'};const selId=isP?'print-mkt-sel':'dig-mkt-sel';if(set.has(name)){set.delete(name);document.getElementById(idMap[name]).classList.remove('active');}else{set.add(name);document.getElementById(idMap[name]).classList.add('active');}const arr=Array.from(set);const el=document.getElementById(selId);el.textContent=arr.length?arr.length+' market'+(arr.length>1?'s':'')+': '+arr.join(', '):'';recalc();}
 const PUBS=[
 {n:"TRIBEZA · Print",t:"t",i:[["Half Page (1x)",2200],["Half Page (3x)",1950],["Half Page (6x)",1750],["Full Page (1x)",3550],["Full Page (3x)",3150],["Full Page (6x)",2750],["Two-Page Spread (1x)",5900],["Two-Page Spread (3x)",5300],["Two-Page Spread (6x)",4900],["Back Cover (6x)",4900],["Inside Front Cover Spread (6x)",5500],["Inside Back Cover (6x)",3700],["TOC Adjacent (1x)",4100],["TOC Adjacent (3x)",3300],["TOC Adjacent (6x)",2900],["Editor's Letter Adjacent (1x)",4100],["Masthead Adjacent (1x)",4100],["Social Hour Adjacent (1x)",4100],["Guaranteed RHR (1x)",3600],["Guaranteed RHR (3x)",3100],["Guaranteed RHR (6x)",2700]]},
-{n:"TRIBEZA · Special Advertising Sections",t:"t",i:[["Special Section: Two-Page Spread",5000],["Special Section: Full Page",2950],["Special Section: Half Page",1800],["Interior Design Forecast — Jan/Feb",0,"iq"],["Spring Style Guide — Mar/Apr",2950],["Austin Neighborhood Guide — May/Jun",0,"iq"],["Curb Appeal — May/Jun",0,"iq"],["Summer Getaway Guide — Jul/Aug",0,"iq"],["Toast of the Town — Jul/Aug",0,"iq"],["Austin Pet Guide — Sep/Oct",0,"iq"],["Holiday Gift Guide — Nov/Dec",0,"iq"]]},
+{n:"TRIBEZA · Special Advertising Sections",t:"t",i:[["Special Section: Two-Page Spread",5000],["Special Section: Full Page",2950],["Special Section: Half Page",1800],["Interior Design Forecast — Jan/Feb",0,"iq"],["Spring Style Guide — Mar/Apr",2950],["Austin Neighborhood Guide — May/Jun",0,"iq"],["Curb Appeal — May/Jun",0,"iq"],["Summer Getaway Guide — Jul/Aug",0,"iq"],["Toast of the Town — Jul/Aug",0,"iq"],["Austin Pet Guide — Sep/Oct",0,"iq"],["Holiday Gift Guide — Nov/Dec",0,"iq"],["Second Homes (1 market - feature + dedicated e-blast)",1950],["Second Homes (2 markets - feature + dedicated e-blasts)",3700],["Second Homes (All 3 markets - feature + dedicated e-blasts)",5250]]},
 {n:"TRIBEZA HOME · Spring Issue",t:"t",i:[["Half Page",2200],["Full Page",3550],["Two-Page Spread",5900],["Inside Back Cover",4300],["TOC Adjacent",3900],["Masthead Adjacent",3900],["Guaranteed RHR",3750],["HOME Directory: Standard Listing (free with ad)",0,"va"],["HOME Directory: Featured Listing upgrade",250]]},
 {n:"TRIBEZA HOME · Fall Issue",t:"t",i:[["Half Page",2200],["Full Page",3550],["Two-Page Spread",5900],["Inside Back Cover",4300],["TOC Adjacent",3900],["Masthead Adjacent",3900],["Guaranteed RHR",3750],["HOME Directory: Standard Listing (free with ad)",0,"va"],["HOME Directory: Featured Listing upgrade",250]]},
 {n:"TRIBEZA · Sponsored Editorial & Digital Guides",t:"t",i:[["Sponsored Editorial: Single Article",2600],["Sponsored Editorial: Article Series (2 articles + landing page)",5500],["Add-on: Print Full Page with Sponsored Editorial",2000],["Add-on: Print 2-Page Spread with Sponsored Editorial",3500],["Digital Guide: Standard Listing",900],["Digital Guide: Featured Listing (incl. product eblast)",550]]},
@@ -1517,6 +1634,7 @@ const PAGE_MAP = {
   "TRIBEZA · Special Advertising Sections": [
     { kit:"tribeza-2026", page:11, label:"Special Advertising Sections Overview" },
     { kit:"tribeza-2026", page:8, label:"TRIBEZA Editorial Calendar" },
+    { kit:"second-homes", page:1, label:"Second Homes - feature + dedicated e-blast" },
     { kit:"tribeza-guide-wellness", page:1, label:"Wellness Guide" },
     { kit:"tribeza-guide-valentines", page:1, label:"Valentine's Day Gift Guide" },
     { kit:"tribeza-guide-wedding", page:1, label:"Wedding & Events Guide" },
@@ -1654,6 +1772,7 @@ const KIT_FILES = {
   "tribeza-guide-pet": "tribeza-guide-pet.pdf",
   "tribeza-guide-holiday-gift": "tribeza-guide-holiday-gift.pdf",
   "tribeza-guide-getaway": "tribeza-guide-getaway.pdf",
+  "second-homes": "Second Homes.pdf",
   "papercity-2026": "papercity-2026.pdf",
   "roundtop-2026": "roundtop-2026.pdf",
   "roundtop-digital": "roundtop-digital.pdf"
@@ -1735,7 +1854,7 @@ function getSelectedSpecLinks() {
     const file = KIT_FILES[kit];
     if (file) {
       links.push({
-        url: `${BASE_URL}${file}#page=${page}`,
+        url: `${BASE_URL}${encodeURIComponent(file)}#page=${page}`,
         label: cb.nextElementSibling ? cb.nextElementSibling.textContent : `${kit} p.${page}`,
         kit, page, file
       });
@@ -1749,6 +1868,7 @@ let lastProposalLines = [];
 let lastProposalTotal = 0;
 const SCOUT_LEADS_KEY = 'tp_scout_leads';
 const SCOUT_GOOGLE_KEY = 'tp_scout_google_key';
+const MEETING_NOTES_KEY = 'tp_meeting_notes';
 let scoutMap = null;
 let scoutMarker = null;
 let scoutSearchResults = [];
@@ -1756,6 +1876,8 @@ let scoutLeads = [];
 let editingScoutLeadId = null;
 let scoutPlacesPromise = null;
 let scoutPlacesService = null;
+let meetingNotes = [];
+let editingMeetingId = null;
 
 build();
 
@@ -1772,6 +1894,7 @@ function updateNavState(mode) {
   const isClientMode = mode === 'new' || mode === 'renewal';
   document.getElementById('clientMenuButton')?.classList.toggle('active', isClientMode);
   document.getElementById('modeScout')?.classList.toggle('active', mode === 'scout');
+  document.getElementById('modeMeeting')?.classList.toggle('active', mode === 'meeting');
   document.getElementById('modeProspect')?.classList.toggle('active', mode === 'prospect');
   document.getElementById('clientOptionNew')?.classList.toggle('active', mode === 'new');
   document.getElementById('clientOptionRenewal')?.classList.toggle('active', mode === 'renewal');
@@ -1784,11 +1907,13 @@ function setMode(mode) {
   if (rf) rf.classList.toggle('visible', mode === 'renewal');
   const mb = document.getElementById('mainBuilder');
   const sp = document.getElementById('scoutPanel');
+  const mp = document.getElementById('meetingPanel');
   const pp = document.getElementById('prospectPanel');
   const out = document.getElementById('outputSection');
   const showBuilder = mode === 'new' || mode === 'renewal';
   if (mb) mb.style.display = showBuilder ? 'block' : 'none';
   if (sp) sp.style.display = mode === 'scout' ? 'block' : 'none';
+  if (mp) mp.style.display = mode === 'meeting' ? 'block' : 'none';
   if (pp) pp.style.display = mode === 'prospect' ? 'block' : 'none';
   if (out) out.style.display = showBuilder ? '' : 'none';
   if (mode === 'scout' && scoutMap) {
@@ -2197,7 +2322,197 @@ function initScout() {
   initScoutMap();
   if (!window.L) setScoutStatus('Map library could not load. You can still capture leads manually.', 'error');
 }
+
+// ── MEETING MODE ─────────────────────────────────────
+function setMeetingStatus(message, tone) {
+  const el = document.getElementById('meetingStatus');
+  if (!el) return;
+  el.textContent = message || '';
+  el.className = 'meeting-status' + (tone ? ' ' + tone : '');
+}
+function getMeetingToday() {
+  return new Date().toLocaleDateString('en-US', { month:'short', day:'numeric', year:'numeric' });
+}
+function getMeetingField(id) {
+  return document.getElementById(id)?.value.trim() || '';
+}
+function setMeetingField(id, value) {
+  const field = document.getElementById(id);
+  if (field) field.value = value || '';
+}
+function getMeetingChecklistState() {
+  const state = {};
+  document.querySelectorAll('[data-meeting-check]').forEach(cb => {
+    state[cb.getAttribute('data-meeting-check')] = cb.checked;
+  });
+  return state;
+}
+function setMeetingChecklistState(state) {
+  document.querySelectorAll('[data-meeting-check]').forEach(cb => {
+    cb.checked = !!(state && state[cb.getAttribute('data-meeting-check')]);
+  });
+}
+function loadMeetingNotes() {
+  try {
+    meetingNotes = JSON.parse(localStorage.getItem(MEETING_NOTES_KEY) || '[]');
+  } catch (err) {
+    meetingNotes = [];
+  }
+}
+function persistMeetingNotes() {
+  localStorage.setItem(MEETING_NOTES_KEY, JSON.stringify(meetingNotes));
+}
+function renderMeetingNotes() {
+  const list = document.getElementById('meetingSavedList');
+  const count = document.getElementById('meetingSavedCount');
+  if (!list || !count) return;
+  count.textContent = meetingNotes.length + (meetingNotes.length === 1 ? ' meeting' : ' meetings');
+  if (!meetingNotes.length) {
+    list.innerHTML = '<div class="meeting-empty">No meeting notes saved yet. Capture a live call or visit here, then reopen it anytime.</div>';
+    return;
+  }
+  list.innerHTML = meetingNotes.map(note => `
+    <div class="meeting-card">
+      <div class="meeting-card-head">
+        <div>
+          <div class="meeting-card-name">${escapeHtml(note.company || 'Untitled Meeting')}</div>
+          <div class="meeting-card-line">${escapeHtml(note.contact || 'No contact saved')} · ${escapeHtml(note.type || '')}</div>
+        </div>
+        <div class="meeting-card-date">${escapeHtml(note.date || '')}</div>
+      </div>
+      ${note.nextSteps ? `<div class="meeting-card-line"><strong>Next:</strong> ${escapeHtml(note.nextSteps)}</div>` : ''}
+      ${note.followupDate ? `<div class="meeting-card-line"><strong>Follow-Up:</strong> ${escapeHtml(note.followupDate)}</div>` : ''}
+      ${note.productsInterest ? `<div class="meeting-card-line"><strong>Products:</strong> ${escapeHtml(note.productsInterest)}</div>` : ''}
+      ${note.marketsInterest ? `<div class="meeting-card-line"><strong>Markets:</strong> ${escapeHtml(note.marketsInterest)}</div>` : ''}
+      <div class="meeting-card-actions">
+        <button class="meeting-quiet-btn" onclick="editMeetingNote('${note.id}')">Open</button>
+        <button class="meeting-quiet-btn" onclick="deleteMeetingNote('${note.id}')">Delete</button>
+        <button class="meeting-btn" onclick="startProposalFromMeeting('${note.id}')">Start Proposal</button>
+      </div>
+    </div>
+  `).join('');
+}
+function clearMeetingForm(resetStatus) {
+  editingMeetingId = null;
+  ['meetingCompany','meetingContact','meetingNotes','meetingProductsInterest','meetingMarketsInterest','meetingNextSteps','meetingFollowupDate'].forEach(id => setMeetingField(id, ''));
+  setMeetingField('meetingType', 'New Prospect');
+  setMeetingField('meetingDate', getMeetingToday());
+  setMeetingChecklistState({});
+  const saveButton = document.getElementById('meetingSaveButton');
+  if (saveButton) saveButton.textContent = 'Save Meeting Notes';
+  if (resetStatus) setMeetingStatus('Meeting form cleared. Notes will save locally in this browser.', '');
+}
+function buildMeetingProposalNotes(note) {
+  const checkedItems = Object.entries(note.checklist || {}).filter(([, checked]) => checked).map(([label]) => label);
+  return [
+    note.notes ? 'Meeting notes: ' + note.notes : '',
+    note.contact ? 'Contact: ' + note.contact : '',
+    note.date ? 'Meeting date: ' + note.date : '',
+    checkedItems.length ? 'Covered in meeting: ' + checkedItems.join(', ') : '',
+    note.productsInterest ? 'Products of interest: ' + note.productsInterest : '',
+    note.marketsInterest ? 'Markets of interest: ' + note.marketsInterest : '',
+    note.nextSteps ? 'Next steps: ' + note.nextSteps : '',
+    note.followupDate ? 'Follow-up date: ' + note.followupDate : ''
+  ].filter(Boolean).join(' | ');
+}
+function saveMeetingNote() {
+  const company = getMeetingField('meetingCompany');
+  if (!company) {
+    setMeetingStatus('Add a client or company name before saving the meeting notes.', 'error');
+    return;
+  }
+  const existing = meetingNotes.find(note => note.id === editingMeetingId);
+  const note = {
+    id: editingMeetingId || String(Date.now()),
+    company: company,
+    contact: getMeetingField('meetingContact'),
+    type: getMeetingField('meetingType'),
+    date: getMeetingField('meetingDate') || getMeetingToday(),
+    notes: getMeetingField('meetingNotes'),
+    productsInterest: getMeetingField('meetingProductsInterest'),
+    marketsInterest: getMeetingField('meetingMarketsInterest'),
+    nextSteps: getMeetingField('meetingNextSteps'),
+    followupDate: getMeetingField('meetingFollowupDate'),
+    checklist: getMeetingChecklistState(),
+    savedAt: existing?.savedAt || new Date().toISOString()
+  };
+  if (editingMeetingId) meetingNotes = meetingNotes.map(item => item.id === editingMeetingId ? note : item);
+  else meetingNotes.unshift(note);
+  persistMeetingNotes();
+  renderMeetingNotes();
+  clearMeetingForm(false);
+  setMeetingStatus('Meeting notes saved. You can reopen them here or start a proposal right away.', 'success');
+}
+function editMeetingNote(id) {
+  const note = meetingNotes.find(item => item.id === id);
+  if (!note) return;
+  editingMeetingId = id;
+  setMeetingField('meetingCompany', note.company);
+  setMeetingField('meetingContact', note.contact);
+  setMeetingField('meetingType', note.type || 'New Prospect');
+  setMeetingField('meetingDate', note.date || getMeetingToday());
+  setMeetingField('meetingNotes', note.notes);
+  setMeetingField('meetingProductsInterest', note.productsInterest);
+  setMeetingField('meetingMarketsInterest', note.marketsInterest);
+  setMeetingField('meetingNextSteps', note.nextSteps);
+  setMeetingField('meetingFollowupDate', note.followupDate);
+  setMeetingChecklistState(note.checklist || {});
+  const saveButton = document.getElementById('meetingSaveButton');
+  if (saveButton) saveButton.textContent = 'Update Meeting Notes';
+  setMode('meeting');
+  setMeetingStatus('Meeting notes loaded.', '');
+}
+function deleteMeetingNote(id) {
+  const note = meetingNotes.find(item => item.id === id);
+  if (!note) return;
+  if (!confirm('Delete this meeting note? This cannot be undone.')) return;
+  meetingNotes = meetingNotes.filter(item => item.id !== id);
+  persistMeetingNotes();
+  renderMeetingNotes();
+  if (editingMeetingId === id) clearMeetingForm(false);
+  setMeetingStatus('Meeting note deleted.', '');
+}
+function applyMeetingNoteToProposal(note) {
+  const type = (note.type || '').toLowerCase();
+  const useRenewal = type === 'renewal' || type === 'existing client';
+  setMode(useRenewal ? 'renewal' : 'new');
+  document.getElementById('cn').value = note.company || '';
+  document.getElementById('gl').value = buildMeetingProposalNotes(note);
+  document.getElementById('rel').value = useRenewal ? 'Existing client' : 'Warm lead';
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+function startProposalFromCurrentMeeting() {
+  const note = {
+    company: getMeetingField('meetingCompany'),
+    contact: getMeetingField('meetingContact'),
+    type: getMeetingField('meetingType'),
+    date: getMeetingField('meetingDate') || getMeetingToday(),
+    notes: getMeetingField('meetingNotes'),
+    productsInterest: getMeetingField('meetingProductsInterest'),
+    marketsInterest: getMeetingField('meetingMarketsInterest'),
+    nextSteps: getMeetingField('meetingNextSteps'),
+    followupDate: getMeetingField('meetingFollowupDate'),
+    checklist: getMeetingChecklistState()
+  };
+  if (!note.company) {
+    setMeetingStatus('Add the client or company name first so Pitch knows who the proposal is for.', 'error');
+    return;
+  }
+  applyMeetingNoteToProposal(note);
+}
+function startProposalFromMeeting(id) {
+  const note = meetingNotes.find(item => item.id === id);
+  if (!note) return;
+  applyMeetingNoteToProposal(note);
+}
+function initMeetingMode() {
+  loadMeetingNotes();
+  renderMeetingNotes();
+  if (!getMeetingField('meetingDate')) setMeetingField('meetingDate', getMeetingToday());
+}
+
 initScout();
+initMeetingMode();
 setMode('new');
 
 // ── OUTREACH EMAIL TYPE SWITCHER ──────────────────────
