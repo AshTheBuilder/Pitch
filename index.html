@@ -618,33 +618,33 @@ select{
 <!-- MODE BAR -->
 <div class="mode-bar">
   <div class="mode-bar-inner">
-    <button class="nav-pill" id="modeMeeting" onclick="setMode('meeting')">
+    <button class="nav-pill" id="modeMeeting" onclick="setMode('meeting')" aria-label="Meeting Mode">
       <span>Meeting Mode</span>
     </button>
     <div class="nav-menu" id="clientMenu">
-      <button class="nav-pill" id="clientMenuButton" onclick="toggleClientMenu(event)">
+      <button class="nav-pill" id="clientMenuButton" onclick="toggleClientMenu(event)" aria-label="Proposal Builder">
         <span>Proposal Builder</span>
         <span class="nav-caret">▼</span>
       </button>
       <div class="nav-dropdown" id="clientDropdown">
         <button id="clientOptionNew" onclick="setMode('new')">
           <span>
-            <span class="nav-dropdown-title">New Proposal (Prospect)</span>
-            <span class="nav-dropdown-copy">Start a fresh proposal for a new prospect or lead.</span>
+            <span class="nav-dropdown-title">Start New Proposal</span>
+            <span class="nav-dropdown-copy">Open the builder for a fresh proposal without switching the top-level workflow.</span>
           </span>
         </button>
         <button id="clientOptionRenewal" onclick="setMode('renewal')">
           <span>
-            <span class="nav-dropdown-title">Renewal (Existing Client)</span>
-            <span class="nav-dropdown-copy">Open the builder with renewal details and upsell context.</span>
+            <span class="nav-dropdown-title">Open Renewal Flow</span>
+            <span class="nav-dropdown-copy">Jump into renewal packaging and upsell context inside Proposal Builder.</span>
           </span>
         </button>
       </div>
     </div>
-    <button class="nav-pill" id="modeScout" onclick="setMode('scout')">
+    <button class="nav-pill" id="modeScout" onclick="setMode('scout')" aria-label="Scout">
       <span>Scout</span>
     </button>
-    <button class="nav-pill nav-pill-secondary" id="modeProspect" onclick="setMode('prospect')">
+    <button class="nav-pill nav-pill-secondary" id="modeProspect" onclick="setMode('prospect')" aria-label="Tools">
       <span>Tools</span>
     </button>
     <button class="nav-pill history-btn" onclick="openHistory()">
