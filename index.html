@@ -101,11 +101,6 @@ body{
   white-space:nowrap;
 }
 .header-contact strong{display:block;font-family:var(--font-display);font-weight:600;color:var(--black);font-size:1rem;letter-spacing:0.02em;}
-.header-rule{
-  max-width:1000px;margin:0 auto;
-  height:3px;
-  background:linear-gradient(to right, var(--rose) 0%, var(--red) 48%, var(--gold) 78%, var(--olive) 100%);
-}
 .header-sub{
   background:linear-gradient(90deg, rgba(117,30,27,0.96) 0%, rgba(181,37,43,0.94) 56%, rgba(125,106,72,0.9) 100%);
   padding:0;
@@ -114,7 +109,7 @@ body{
   box-shadow:inset 0 1px 0 rgba(255,255,255,0.08);
 }
 .header-sub-inner{
-  max-width:1000px;margin:0 auto;padding:0.95rem 2.5rem 1rem;
+  width:100%;max-width:none;margin:0;padding:0.98rem 2.5rem;
   display:flex;align-items:center;justify-content:flex-start;
 }
 .header-sub p{
@@ -552,9 +547,6 @@ select{
       <span id="hcPhone">281.705.8383</span>&nbsp;&nbsp;·&nbsp;&nbsp;<span id="hcEmail">ashley@tribeza.com</span>
     </div>
   </div>
-  <div style="max-width:1000px;margin:0 auto;padding:0 2.5rem;">
-    <div class="header-rule"></div>
-  </div>
   <div class="header-sub">
     <div class="header-sub-inner">
       <p>Pitch: Prospect to Proposal</p>
@@ -586,7 +578,7 @@ select{
       </div>
     </div>
     <button class="nav-pill" id="modeScout" onclick="setMode('scout')">
-      <span>Scout</span><span class="nav-badge">NEW</span>
+      <span>Scout</span>
     </button>
     <button class="nav-pill" id="modeMeeting" onclick="setMode('meeting')">
       <span>Meeting Mode</span>
