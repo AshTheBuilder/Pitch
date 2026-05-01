@@ -107,6 +107,7 @@ body{
   border-top:1px solid rgba(255,255,255,0.08);
   border-bottom:1px solid rgba(117,30,27,0.25);
   box-shadow:inset 0 1px 0 rgba(255,255,255,0.08);
+  overflow:visible;
 }
 .header-sub-inner{
   width:100%;max-width:none;margin:0;padding:0.98rem 2.5rem;
@@ -114,11 +115,11 @@ body{
 }
 .header-sub p{
   font-family:var(--font-display);
-  font-size:1.02rem;
+  font-size:1.08rem;
   letter-spacing:0.11em;
   text-transform:uppercase;
   color:#fff;
-  font-weight:600;
+  font-weight:700;
   line-height:1;
 }
 
@@ -347,6 +348,8 @@ select{
 }
 .nav-pill:hover{border-color:#b59d8d;background:#fff;}
 .nav-pill.active{background:linear-gradient(135deg, var(--red), var(--rose));color:#fff;border-color:transparent;box-shadow:0 14px 28px rgba(117,30,27,0.18);}
+.nav-pill-secondary{color:var(--gray);background:rgba(255,255,255,0.82);}
+.nav-pill-secondary:hover{color:var(--char);}
 .nav-caret{font-size:0.62rem;line-height:1;opacity:0.9;}
 .nav-badge{
   display:inline-flex;align-items:center;justify-content:center;padding:2px 8px;border-radius:999px;
@@ -435,6 +438,12 @@ select{
 .meeting-sub{font-size:0.78rem;line-height:1.55;color:var(--gray);max-width:46ch;}
 .meeting-badge{padding:0.35rem 0.65rem;border-radius:999px;background:#f7efe6;color:var(--red);font-size:0.58rem;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;}
 .meeting-grid{display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;}
+.meeting-grid-compact{display:grid;grid-template-columns:1fr 1fr 1fr;gap:0.75rem;margin-bottom:0.95rem;}
+.meeting-notes-priority textarea{min-height:220px;}
+.meeting-structured{
+  margin-top:1rem;padding:1rem 1.05rem;border:1px solid rgba(117,30,27,0.08);border-radius:18px;background:#fbf7f2;
+}
+.meeting-structured-title{font-size:0.62rem;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:var(--red);display:block;margin-bottom:0.8rem;}
 .meeting-checklist{
   margin:1rem 0;padding:1rem 1.05rem;border:1px solid rgba(117,30,27,0.08);border-radius:18px;background:#fbf7f2;
 }
@@ -469,6 +478,58 @@ select{
 .meeting-card-line{font-size:0.73rem;line-height:1.55;color:var(--gray);margin-top:0.18rem;}
 .meeting-card-line strong{color:var(--char);}
 .meeting-card-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:0.8rem;}
+.tag-chip-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:0.5rem;}
+.tag-chip{
+  min-height:34px;padding:0 12px;border-radius:999px;border:1px solid var(--border);background:#fff;color:var(--char);
+  font-family:var(--font-ui);font-size:0.64rem;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;transition:all 0.12s;
+}
+.tag-chip:hover{border-color:#b59d8d;background:#faf6f2;}
+.tag-chip.active{background:linear-gradient(135deg, rgba(117,30,27,0.1), rgba(181,37,43,0.15));border-color:var(--red);color:var(--red);}
+
+/* ── PROPOSAL CONTEXT ── */
+.builder-context{
+  background:linear-gradient(180deg, rgba(255,255,255,0.98), rgba(248,243,240,0.96));
+  border:1px solid rgba(117,30,27,0.1);border-radius:22px;box-shadow:var(--shadow);overflow:hidden;
+}
+.builder-context-head{
+  padding:1rem 1.25rem;border-bottom:1px solid rgba(117,30,27,0.08);display:flex;align-items:flex-start;justify-content:space-between;gap:1rem;
+}
+.builder-context-title{font-family:var(--font-display);font-size:1.08rem;font-weight:600;color:var(--red);margin-bottom:4px;}
+.builder-context-sub{font-size:0.74rem;color:var(--gray);line-height:1.5;max-width:58ch;}
+.builder-source-pill{
+  padding:0.35rem 0.7rem;border-radius:999px;background:#f7efe6;color:var(--red);font-size:0.58rem;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;white-space:nowrap;
+}
+.builder-context-body{padding:1rem 1.25rem 1.15rem;display:flex;flex-direction:column;gap:0.95rem;}
+.builder-context-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0.75rem;}
+.context-stat{padding:0.85rem 0.95rem;border:1px solid rgba(117,30,27,0.08);border-radius:16px;background:#fff;}
+.context-stat-label{display:block;font-size:0.56rem;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:var(--gray);margin-bottom:5px;}
+.context-stat-value{font-size:0.8rem;line-height:1.45;color:var(--char);word-break:break-word;}
+.context-tags{display:flex;gap:6px;flex-wrap:wrap;}
+.context-tag{padding:3px 9px;border-radius:999px;background:#f2ebe4;color:var(--char);font-size:0.64rem;font-weight:600;}
+.context-toggle{
+  width:100%;display:flex;align-items:center;justify-content:space-between;padding:0.9rem 0.95rem;border:1px solid rgba(117,30,27,0.08);border-radius:16px;
+  background:#fff;color:var(--char);cursor:pointer;font-family:var(--font-ui);font-size:0.68rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;
+}
+.context-toggle span:last-child{font-size:0.7rem;color:var(--gray);}
+.context-panel{display:none;padding:0.95rem 1rem;border:1px solid rgba(117,30,27,0.08);border-radius:16px;background:#fcfaf7;font-size:0.77rem;line-height:1.7;color:var(--gray);white-space:pre-wrap;}
+.context-panel.open{display:block;}
+.context-actions{display:flex;gap:8px;flex-wrap:wrap;}
+.context-btn{
+  min-height:38px;padding:0 14px;border-radius:999px;border:1px solid var(--border);background:#fff;color:var(--char);
+  font-family:var(--font-ui);font-size:0.66rem;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;transition:all 0.12s;
+}
+.context-btn:hover{border-color:#b59d8d;background:#faf6f2;}
+.pricing-summary{margin-top:0.9rem;padding:1rem 1rem 0.95rem;border:1px solid rgba(117,30,27,0.08);border-radius:18px;background:rgba(255,255,255,0.88);}
+.pricing-summary-head{display:flex;align-items:flex-end;justify-content:space-between;gap:1rem;margin-bottom:0.75rem;}
+.pricing-summary-title{font-size:0.62rem;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:var(--red);}
+.pricing-summary-sub{font-size:0.7rem;color:var(--gray);}
+.pricing-summary-list{display:flex;flex-direction:column;gap:8px;}
+.pricing-row{
+  display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px;align-items:start;padding:0.72rem 0.8rem;border:1px solid rgba(117,30,27,0.08);border-radius:14px;background:#fff;
+}
+.pricing-row-name{font-size:0.76rem;line-height:1.45;color:var(--char);}
+.pricing-row-price{font-size:0.74rem;font-weight:600;color:var(--red);white-space:nowrap;}
+.pricing-empty{padding:1rem;border:1px dashed var(--border);border-radius:14px;text-align:center;font-size:0.74rem;color:var(--gray);background:#fcfaf7;}
 
 /* ── RENEWAL FIELDS ── */
 .renewal-fields{display:none;background:linear-gradient(180deg, #fffaf4, #f8efe4);border:1px solid rgba(184,150,90,0.34);border-radius:18px;padding:1rem 1.25rem;margin-top:0.875rem;}
@@ -509,7 +570,7 @@ select{
   .nav-dropdown{width:100%;min-width:0;}
   .prospect-wrap,.scout-wrap,.meeting-wrap,.output-section{padding-left:1rem;padding-right:1rem;}
   .scout-shell,.meeting-shell{grid-template-columns:1fr;}
-  .scout-grid,.meeting-grid,.meeting-checklist-grid{grid-template-columns:1fr;}
+  .scout-grid,.meeting-grid,.meeting-grid-compact,.meeting-checklist-grid,.builder-context-grid{grid-template-columns:1fr;}
   .scout-map{height:300px;}
   .history-drawer{width:min(100vw,400px);}
 }
@@ -557,21 +618,24 @@ select{
 <!-- MODE BAR -->
 <div class="mode-bar">
   <div class="mode-bar-inner">
+    <button class="nav-pill" id="modeMeeting" onclick="setMode('meeting')">
+      <span>Meeting Mode</span>
+    </button>
     <div class="nav-menu" id="clientMenu">
       <button class="nav-pill" id="clientMenuButton" onclick="toggleClientMenu(event)">
-        <span>Client</span>
+        <span>Proposal Builder</span>
         <span class="nav-caret">▼</span>
       </button>
       <div class="nav-dropdown" id="clientDropdown">
         <button id="clientOptionNew" onclick="setMode('new')">
           <span>
-            <span class="nav-dropdown-title">New Prospect</span>
-            <span class="nav-dropdown-copy">Start a fresh proposal for a new client or lead.</span>
+            <span class="nav-dropdown-title">New Proposal (Prospect)</span>
+            <span class="nav-dropdown-copy">Start a fresh proposal for a new prospect or lead.</span>
           </span>
         </button>
         <button id="clientOptionRenewal" onclick="setMode('renewal')">
           <span>
-            <span class="nav-dropdown-title">Renewal / Existing Client</span>
+            <span class="nav-dropdown-title">Renewal (Existing Client)</span>
             <span class="nav-dropdown-copy">Open the builder with renewal details and upsell context.</span>
           </span>
         </button>
@@ -580,10 +644,7 @@ select{
     <button class="nav-pill" id="modeScout" onclick="setMode('scout')">
       <span>Scout</span>
     </button>
-    <button class="nav-pill" id="modeMeeting" onclick="setMode('meeting')">
-      <span>Meeting Mode</span>
-    </button>
-    <button class="nav-pill" id="modeProspect" onclick="setMode('prospect')">
+    <button class="nav-pill nav-pill-secondary" id="modeProspect" onclick="setMode('prospect')">
       <span>Tools</span>
     </button>
     <button class="nav-pill history-btn" onclick="openHistory()">
@@ -684,48 +745,52 @@ select{
         </div>
 
         <div class="meeting-grid">
-          <div class="field"><label>Client / Company Name</label><input type="text" id="meetingCompany" placeholder="Company or client name"></div>
+          <div class="field"><label>Client / Business Name</label><input type="text" id="meetingCompany" placeholder="Company or business name"></div>
           <div class="field"><label>Contact Name</label><input type="text" id="meetingContact" placeholder="Primary contact"></div>
-          <div class="field"><label>Meeting Type</label>
+          <div class="field"><label>Website</label><input type="text" id="meetingWebsite" placeholder="Optional website"></div>
+          <div class="field"><label>Proposal Path</label>
             <select id="meetingType">
-              <option>New Prospect</option>
+              <option>New Proposal (Prospect)</option>
               <option>Renewal</option>
               <option>Existing Client</option>
               <option>Discovery Call</option>
               <option>In-Person Visit</option>
             </select>
           </div>
-          <div class="field"><label>Meeting Date</label><input type="text" id="meetingDate" placeholder="Auto-filled to today"></div>
+        </div>
+        <div class="meeting-grid-compact">
+          <div class="field"><label>Goals</label><input type="text" id="meetingGoals" placeholder="What they want to accomplish"></div>
+          <div class="field"><label>Budget</label><input type="text" id="meetingBudget" placeholder="Budget range or signal"></div>
+          <div class="field"><label>Timing</label><input type="text" id="meetingTiming" placeholder="Launch timing or deadline"></div>
         </div>
 
-        <div class="field"><label>Meeting Notes</label><textarea id="meetingNotes" style="min-height:180px;" placeholder="Capture the conversation live: goals, objections, products they asked about, timing, stakeholder details, and anything that should shape the proposal."></textarea></div>
+        <div class="field meeting-notes-priority"><label>Meeting Notes</label><textarea id="meetingNotes" placeholder="Capture the conversation live: the story, buying signals, what lit them up, what they hesitated on, and anything that should shape the proposal."></textarea></div>
 
-        <div class="meeting-checklist">
-          <span class="meeting-checklist-title">Quick Prompt Checklist</span>
-          <div class="meeting-checklist-grid">
-            <label class="meeting-check"><input type="checkbox" data-meeting-check="Business goals"> <span>Business goals</span></label>
-            <label class="meeting-check"><input type="checkbox" data-meeting-check="Target audience"> <span>Target audience</span></label>
-            <label class="meeting-check"><input type="checkbox" data-meeting-check="Budget range"> <span>Budget range</span></label>
-            <label class="meeting-check"><input type="checkbox" data-meeting-check="Timing / deadline"> <span>Timing / deadline</span></label>
-            <label class="meeting-check"><input type="checkbox" data-meeting-check="Products of interest"> <span>Products of interest</span></label>
-            <label class="meeting-check"><input type="checkbox" data-meeting-check="Markets of interest"> <span>Markets of interest</span></label>
-            <label class="meeting-check"><input type="checkbox" data-meeting-check="Decision maker"> <span>Decision maker</span></label>
-            <label class="meeting-check"><input type="checkbox" data-meeting-check="Creative assets available"> <span>Creative assets available</span></label>
-            <label class="meeting-check"><input type="checkbox" data-meeting-check="Pain points / objections"> <span>Pain points / objections</span></label>
-            <label class="meeting-check"><input type="checkbox" data-meeting-check="Follow-up needed"> <span>Follow-up needed</span></label>
+        <div class="meeting-structured">
+          <span class="meeting-structured-title">Quick Prompts</span>
+          <div class="meeting-grid">
+            <div class="field"><label>Products / Interests Mentioned</label><input type="text" id="meetingProductsInterest" placeholder="Products, packages, placements, themes"></div>
+            <div class="field"><label>Event Potential</label><input type="text" id="meetingEventPotential" placeholder="Launch party, sponsor tie-in, hosted moment"></div>
+            <div class="field"><label>Objections or Concerns</label><input type="text" id="meetingObjections" placeholder="Budget, timing, proof, internal approval"></div>
+            <div class="field"><label>Follow-Up Items</label><input type="text" id="meetingNextSteps" placeholder="What needs to happen next"></div>
+          </div>
+          <div class="field"><label>Tags</label><input type="text" id="meetingTags" placeholder="Comma-separated tags, e.g. event-friendly, warm lead, luxury"></div>
+          <div class="tag-chip-row">
+            <button type="button" class="tag-chip" data-tag-chip="event-friendly" onclick="toggleMeetingTag('event-friendly')">Event-Friendly</button>
+            <button type="button" class="tag-chip" data-tag-chip="warm lead" onclick="toggleMeetingTag('warm lead')">Warm Lead</button>
+            <button type="button" class="tag-chip" data-tag-chip="decision-maker" onclick="toggleMeetingTag('decision-maker')">Decision-Maker</button>
+            <button type="button" class="tag-chip" data-tag-chip="needs follow-up" onclick="toggleMeetingTag('needs follow-up')">Needs Follow-Up</button>
           </div>
         </div>
 
         <div class="meeting-grid">
-          <div class="field"><label>Products of Interest</label><input type="text" id="meetingProductsInterest" placeholder="Products or packages they mentioned"></div>
-          <div class="field"><label>Markets of Interest</label><input type="text" id="meetingMarketsInterest" placeholder="Austin, Dallas, Houston, Round Top..."></div>
-          <div class="field"><label>Next Steps</label><input type="text" id="meetingNextSteps" placeholder="What needs to happen next"></div>
+          <div class="field"><label>Meeting Date</label><input type="text" id="meetingDate" placeholder="Auto-filled to today"></div>
           <div class="field"><label>Follow-Up Date</label><input type="text" id="meetingFollowupDate" placeholder="Target follow-up date"></div>
         </div>
 
         <div class="meeting-actions">
           <button class="meeting-btn" id="meetingSaveButton" onclick="saveMeetingNote()">Save Meeting Notes</button>
-          <button class="meeting-btn" onclick="startProposalFromCurrentMeeting()">Start Proposal From Notes</button>
+          <button class="meeting-btn" onclick="startProposalFromCurrentMeeting()">Create Proposal</button>
           <button class="meeting-quiet-btn" onclick="clearMeetingForm(true)">Clear</button>
         </div>
         <div class="meeting-status" id="meetingStatus">Meeting notes save locally in this browser so you can reopen them fast.</div>
@@ -896,15 +961,15 @@ select{
     <div class="prospect-section">
       <div class="prospect-section-header">
         <div class="prospect-section-title">Discovery Call Prep</div>
-        <div class="prospect-section-sub">Get 8-10 sharp, tailored questions before a first meeting. Pulls from your client brief — add anything extra below.</div>
+        <div class="prospect-section-sub">Get 8-10 sharp, tailored questions before a first meeting. Pulls from your Proposal Builder details — add anything extra below.</div>
       </div>
       <div style="background:var(--cream);border:1px solid var(--border);border-radius:2px;padding:0.75rem 1rem;margin-bottom:14px;font-size:0.72rem;color:var(--gray);">
-        <span style="color:var(--red);font-weight:500;font-size:0.6rem;letter-spacing:0.08em;text-transform:uppercase;display:block;margin-bottom:4px;">Pulling from Client Brief</span>
-        Reads client name, industry, goal, budget, relationship, and timeline from the proposal builder. Fill those in first for the best results.
+        <span style="color:var(--red);font-weight:500;font-size:0.6rem;letter-spacing:0.08em;text-transform:uppercase;display:block;margin-bottom:4px;">Pulling from Proposal Builder</span>
+        Reads business name, industry, goal, budget, relationship, and timeline from Proposal Builder. Fill those in first for the best results.
       </div>
       <div class="field-row" style="margin-bottom:10px;">
-        <div class="field"><label>Client Name <span style="font-weight:300;font-style:italic;">(if not filled in brief)</span></label>
-          <input type="text" id="prepClientOverride" placeholder="Pulls from brief — override here if needed">
+        <div class="field"><label>Business Name <span style="font-weight:300;font-style:italic;">(if not filled in builder)</span></label>
+          <input type="text" id="prepClientOverride" placeholder="Pulls from Proposal Builder — override here if needed">
         </div>
         <div class="field"><label>Industry Override <span style="font-weight:300;font-style:italic;">(optional)</span></label>
           <select id="prepIndustryOverride">
@@ -990,11 +1055,46 @@ select{
       <div id="repSaved" style="font-size:0.68rem;color:#3B6D11;margin-top:5px;display:none;">Saved! Your info will appear on all proposals.</div>
     </div>
 
+    <div class="builder-context" id="proposalContext" style="display:none;">
+      <div class="builder-context-head">
+        <div>
+          <div class="builder-context-title" id="proposalContextTitle">Proposal in Progress</div>
+          <div class="builder-context-sub" id="proposalContextSub">Carry details in from Meeting Mode or Scout so you can move straight into building the proposal.</div>
+        </div>
+        <span class="builder-source-pill" id="proposalSourcePill">Proposal Builder</span>
+      </div>
+      <div class="builder-context-body">
+        <div class="builder-context-grid">
+          <div class="context-stat">
+            <span class="context-stat-label">Business</span>
+            <div class="context-stat-value" id="proposalContextBusiness">Not set yet</div>
+          </div>
+          <div class="context-stat">
+            <span class="context-stat-label">Contact / Phone</span>
+            <div class="context-stat-value" id="proposalContextContact">Add details from Meeting Mode or Scout</div>
+          </div>
+          <div class="context-stat">
+            <span class="context-stat-label">Website / Industry</span>
+            <div class="context-stat-value" id="proposalContextWebsite">No website captured yet</div>
+          </div>
+        </div>
+        <div class="context-tags" id="proposalContextTags"></div>
+        <button class="context-toggle" type="button" id="proposalNotesToggle" onclick="toggleProposalNotesPanel()">
+          <span>Meeting Notes</span>
+          <span id="proposalNotesToggleCopy">Show</span>
+        </button>
+        <div class="context-panel" id="proposalNotesPanel"></div>
+        <div class="context-actions">
+          <button class="context-btn" id="proposalReturnButton" onclick="returnToProposalSource()" style="display:none;">Return to Meeting Notes</button>
+        </div>
+      </div>
+    </div>
+
     <div class="card">
       <div class="card-header" style="justify-content:flex-end;"><button id="suggestBtn" onclick="suggestProducts()" style="font-family:'Poppins',sans-serif;font-size:0.65rem;font-weight:500;letter-spacing:0.06em;text-transform:uppercase;color:var(--red);background:none;border:1px solid var(--red);border-radius:2px;padding:4px 10px;cursor:pointer;">Suggest Products</button></div>
       <div class="card-body">
         <div class="field-row">
-          <div class="field"><label>Client / Company</label><input type="text" id="cn" placeholder="e.g. Restoration Hardware"></div>
+          <div class="field"><label>Business Name</label><input type="text" id="cn" placeholder="e.g. Restoration Hardware"></div>
           <div class="field"><label>Website</label><input type="text" id="wb" placeholder="optional"></div>
         </div>
         <div class="field-row">
@@ -1160,6 +1260,15 @@ select{
         <span class="total-amount" id="tot">$0</span>
       </div>
       <div class="mkt-breakdown" id="mkt-breakdown"></div>
+      <div class="pricing-summary">
+        <div class="pricing-summary-head">
+          <div class="pricing-summary-title">Selected Pricing</div>
+          <div class="pricing-summary-sub">Structured line items for the proposal</div>
+        </div>
+        <div class="pricing-summary-list" id="pricingSummaryList">
+          <div class="pricing-empty">Select products to build the pricing list.</div>
+        </div>
+      </div>
 
       <!-- SPEC SHEET PANEL -->
       <div class="spec-panel" id="specPanel" style="display:none;">
@@ -1288,7 +1397,21 @@ const showQty=pr>0&&tg!=='va'&&tg!=='iq'&&tg!=='tbd'&&qty===1;
 const el=document.createElement('div');el.className='prod-item';el.id='pi'+i;el.innerHTML=`<div class="prod-check" id="ck${i}"></div><span class="prod-name">${nm}${th}</span>${showQty?`<div class="prod-qty" id="qty${i}"><button class="qty-btn" onclick="changeQty(event,${i},${pi},-1)">−</button><span class="qty-val" id="qv${i}">1</span><button class="qty-btn" onclick="changeQty(event,${i},${pi},1)">+</button></div>`:'<span style="flex:1"></span>'}<span class="prod-price" id="pr${i}">${ps}</span>`;el.onclick=()=>togItem(i,pi);itDiv.appendChild(el);});blk.appendChild(hdr);blk.appendChild(itDiv);g.appendChild(blk);});}
 function changeQty(e,i,pi,delta){e.stopPropagation();if(!sel.has(i))return;const p=all[i];const next=Math.max(1,(p.customQty||1)+delta);p.customQty=next;document.getElementById('qv'+i).textContent=next;recalc();}
 function togItem(i,pi){if(sel.has(i)){sel.delete(i);document.getElementById('pi'+i).classList.remove('selected');all[i].customQty=all[i].qty||1;const qv=document.getElementById('qv'+i);if(qv)qv.textContent=all[i].customQty;}else{sel.add(i);document.getElementById('pi'+i).classList.add('selected');}recalc();let start=0;for(let x=0;x<pi;x++)start+=PUBS[x].i.length;let ct=0;for(let x=start;x<start+PUBS[pi].i.length;x++){if(sel.has(x))ct++;}document.getElementById('sc'+pi).textContent=ct>0?ct+' selected':'';}
-function recalc(){let total=0,pcP=0,pcD=0;all.forEach((p,i)=>{const prEl=document.getElementById('pr'+i);if(prEl)prEl.textContent=sel.has(i)?getSelectedPriceText(p):getBasePriceText(p);});sel.forEach(i=>{const p=all[i];const mult=getMult(p.type);const cq=p.customQty||p.qty||1;const lt=p.pr*cq*mult;total+=lt;if(p.type==='pp')pcP+=lt;if(p.type==='pd')pcD+=lt;});document.getElementById('tot').textContent='$'+total.toLocaleString();const tc=document.getElementById('total-count');tc.textContent=sel.size>0?sel.size+' product'+(sel.size>1?'s':'')+' selected':'';let bd=[];if(pcP>0&&printMkts.size>1)bd.push('PC Print: $'+(pcP/printMkts.size).toLocaleString()+' x '+printMkts.size+' markets = $'+pcP.toLocaleString());if(pcD>0&&digMkts.size>1)bd.push('PC Digital: $'+(pcD/digMkts.size).toLocaleString()+' x '+digMkts.size+' markets = $'+pcD.toLocaleString());document.getElementById('mkt-breakdown').textContent=bd.join('  ·  ');updateSpecPanel();}
+function renderPricingSummary(lines) {
+  const list = document.getElementById('pricingSummaryList');
+  if (!list) return;
+  if (!lines.length) {
+    list.innerHTML = '<div class="pricing-empty">Select products to build the pricing list.</div>';
+    return;
+  }
+  list.innerHTML = lines.map(line => `
+    <div class="pricing-row">
+      <div class="pricing-row-name">${escapeHtml(line.name)}</div>
+      <div class="pricing-row-price">${escapeHtml(line.price)}</div>
+    </div>
+  `).join('');
+}
+function recalc(){let total=0,pcP=0,pcD=0;const pricingLines=[];all.forEach((p,i)=>{const prEl=document.getElementById('pr'+i);if(prEl)prEl.textContent=sel.has(i)?getSelectedPriceText(p):getBasePriceText(p);});sel.forEach(i=>{const p=all[i];const mult=getMult(p.type);const cq=p.customQty||p.qty||1;const lt=p.pr*cq*mult;total+=lt;if(p.type==='pp')pcP+=lt;if(p.type==='pd')pcD+=lt;let mktNote='';if(p.type==='pp'&&printMkts.size>0)mktNote=' ('+Array.from(printMkts).join(' + ')+')';if(p.type==='pd'&&digMkts.size>0)mktNote=' ('+Array.from(digMkts).join(' + ')+')';let priceStr='';if(p.pr>0){if(mult>1&&cq>1){priceStr='$'+lt.toLocaleString()+' ($'+p.pr.toLocaleString()+' x '+cq+' x '+mult+' markets)';}else if(mult>1){priceStr='$'+lt.toLocaleString()+' ($'+p.pr.toLocaleString()+' x '+mult+' markets)';}else if(cq>1){priceStr='$'+lt.toLocaleString()+' ($'+p.pr.toLocaleString()+' x '+cq+')';}else{priceStr='$'+lt.toLocaleString();}}else{priceStr=p.tg==='tbd'?'TBD':p.tg==='va'?'Complimentary':'Inquire for rate';}pricingLines.push({name:p.nm+(mktNote?mktNote:''),price:priceStr});});document.getElementById('tot').textContent='$'+total.toLocaleString();const tc=document.getElementById('total-count');tc.textContent=sel.size>0?sel.size+' product'+(sel.size>1?'s':'')+' selected':'';let bd=[];if(pcP>0&&printMkts.size>1)bd.push('PC Print: $'+(pcP/printMkts.size).toLocaleString()+' x '+printMkts.size+' markets = $'+pcP.toLocaleString());if(pcD>0&&digMkts.size>1)bd.push('PC Digital: $'+(pcD/digMkts.size).toLocaleString()+' x '+digMkts.size+' markets = $'+pcD.toLocaleString());document.getElementById('mkt-breakdown').textContent=bd.join('  ·  ');renderPricingSummary(pricingLines);updateSpecPanel();}
 async function generate(){if(!API_KEY){alert('Please enter your Anthropic API key first.');return;}if(sel.size===0){alert('Please select at least one product.');return;}const cn=document.getElementById('cn').value.trim()||'TBD';const indEl=document.getElementById('ind');const ind=indEl.options[indEl.selectedIndex]&&indEl.selectedIndex>0?indEl.options[indEl.selectedIndex].text:(indEl.value.trim()||'TBD');const wb=document.getElementById('wb').value.trim();const rel=document.getElementById('rel').value||'Not specified';
   const goal=document.getElementById('goal').options[document.getElementById('goal').selectedIndex]?document.getElementById('goal').options[document.getElementById('goal').selectedIndex].text:'Not specified';
   const budget=document.getElementById('budget').options[document.getElementById('budget').selectedIndex]?document.getElementById('budget').options[document.getElementById('budget').selectedIndex].text:'Not specified';
@@ -1861,6 +1984,7 @@ let lastProposalTotal = 0;
 const SCOUT_LEADS_KEY = 'tp_scout_leads';
 const SCOUT_GOOGLE_KEY = 'tp_scout_google_key';
 const MEETING_NOTES_KEY = 'tp_meeting_notes';
+const MEETING_DRAFT_KEY = 'tp_meeting_draft';
 let scoutMap = null;
 let scoutMarker = null;
 let scoutSearchResults = [];
@@ -1870,6 +1994,8 @@ let scoutPlacesPromise = null;
 let scoutPlacesService = null;
 let meetingNotes = [];
 let editingMeetingId = null;
+let currentProposalContext = null;
+let proposalNotesOpen = false;
 
 build();
 
@@ -1891,6 +2017,81 @@ function updateNavState(mode) {
   document.getElementById('clientOptionNew')?.classList.toggle('active', mode === 'new');
   document.getElementById('clientOptionRenewal')?.classList.toggle('active', mode === 'renewal');
 }
+function getProposalDisplayName() {
+  const business = document.getElementById('cn')?.value.trim();
+  if (business) return business;
+  if (currentProposalContext?.businessName) return currentProposalContext.businessName;
+  if (currentProposalContext?.contactName) return currentProposalContext.contactName;
+  return '';
+}
+function getProposalHeaderText(name) {
+  return name ? 'Proposal for ' + name : 'Proposal in Progress';
+}
+function updateProposalHeaderOnly() {
+  const title = document.getElementById('proposalContextTitle');
+  if (title) title.textContent = getProposalHeaderText(getProposalDisplayName());
+}
+function toggleProposalNotesPanel(forceOpen) {
+  const panel = document.getElementById('proposalNotesPanel');
+  const copy = document.getElementById('proposalNotesToggleCopy');
+  if (!panel || !copy) return;
+  proposalNotesOpen = typeof forceOpen === 'boolean' ? forceOpen : !proposalNotesOpen;
+  panel.classList.toggle('open', proposalNotesOpen);
+  copy.textContent = proposalNotesOpen ? 'Hide' : 'Show';
+}
+function returnToProposalSource() {
+  if (!currentProposalContext) return;
+  if (currentProposalContext.source === 'meeting') {
+    if (currentProposalContext.sourceId) editMeetingNote(currentProposalContext.sourceId);
+    else setMode('meeting');
+    return;
+  }
+  if (currentProposalContext.source === 'scout') {
+    if (currentProposalContext.sourceId) editScoutLead(currentProposalContext.sourceId);
+    else setMode('scout');
+  }
+}
+function updateProposalContext(context, options) {
+  const settings = options || {};
+  currentProposalContext = context ? { ...context } : null;
+  if (typeof settings.openNotes === 'boolean') proposalNotesOpen = settings.openNotes;
+  const wrap = document.getElementById('proposalContext');
+  const title = document.getElementById('proposalContextTitle');
+  const sub = document.getElementById('proposalContextSub');
+  const pill = document.getElementById('proposalSourcePill');
+  const business = document.getElementById('proposalContextBusiness');
+  const contact = document.getElementById('proposalContextContact');
+  const website = document.getElementById('proposalContextWebsite');
+  const tags = document.getElementById('proposalContextTags');
+  const notes = document.getElementById('proposalNotesPanel');
+  const returnBtn = document.getElementById('proposalReturnButton');
+  if (!wrap || !title || !sub || !pill || !business || !contact || !website || !tags || !notes || !returnBtn) return;
+  if (!currentProposalContext) {
+    wrap.style.display = 'none';
+    returnBtn.style.display = 'none';
+    return;
+  }
+  wrap.style.display = 'block';
+  const sourceLabel = currentProposalContext.source === 'meeting' ? 'Meeting Mode' : currentProposalContext.source === 'scout' ? 'Scout Lead' : 'Proposal Builder';
+  title.textContent = getProposalHeaderText(currentProposalContext.businessName || currentProposalContext.contactName || '');
+  sub.textContent = currentProposalContext.source === 'meeting'
+    ? 'Meeting details carried into Proposal Builder so you can move straight into packaging and pricing.'
+    : currentProposalContext.source === 'scout'
+      ? 'Scout details carried into Proposal Builder so you do not have to re-enter the lead.'
+      : 'Use this context to keep proposal-building connected to the rest of the workflow.';
+  pill.textContent = sourceLabel;
+  business.textContent = currentProposalContext.businessName || 'Not captured yet';
+  contact.textContent = [currentProposalContext.contactName, currentProposalContext.phone].filter(Boolean).join(' • ') || 'No contact details captured yet';
+  website.textContent = [currentProposalContext.website, currentProposalContext.industry].filter(Boolean).join(' • ') || 'No website or industry captured yet';
+  const tagList = currentProposalContext.tags || [];
+  tags.innerHTML = tagList.length ? tagList.map(tag => `<span class="context-tag">${escapeHtml(tag)}</span>`).join('') : '';
+  notes.textContent = currentProposalContext.notes || 'No meeting notes or lead notes carried into this proposal yet.';
+  returnBtn.style.display = currentProposalContext.source === 'meeting' ? '' : (currentProposalContext.source === 'scout' ? '' : 'none');
+  returnBtn.textContent = currentProposalContext.source === 'meeting' ? 'Return to Meeting Notes' : 'Return to Scout Lead';
+  const toggleLabel = document.querySelector('#proposalNotesToggle span:first-child');
+  if (toggleLabel) toggleLabel.textContent = currentProposalContext.source === 'meeting' ? 'Meeting Notes' : 'Lead Notes';
+  toggleProposalNotesPanel(!!(currentProposalContext.notes && proposalNotesOpen));
+}
 function setMode(mode) {
   currentMode = mode;
   closeClientMenu();
@@ -1911,6 +2112,7 @@ function setMode(mode) {
   if (mode === 'scout' && scoutMap) {
     setTimeout(() => scoutMap.invalidateSize(), 120);
   }
+  if (showBuilder) updateProposalHeaderOnly();
 }
 document.addEventListener('click', function(event) {
   const menu = document.getElementById('clientMenu');
@@ -1931,6 +2133,13 @@ function escapeHtml(value) {
     .replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;')
     .replace(/'/g, '&#39;');
+}
+function parseTagList(raw) {
+  return String(raw || '')
+    .split(',')
+    .map(tag => tag.trim())
+    .filter(Boolean)
+    .filter((tag, index, arr) => arr.findIndex(item => item.toLowerCase() === tag.toLowerCase()) === index);
 }
 function parseScoutTags(raw) {
   return (raw || '')
@@ -2228,7 +2437,7 @@ function saveScoutLead() {
   persistScoutLeads();
   renderScoutLeads();
   clearScoutForm(false);
-  setScoutStatus('Lead saved. Use Start Proposal whenever you want to move it into Pitch.', 'success');
+  setScoutStatus('Lead saved. Use Start Proposal whenever you want to move it into Proposal Builder.', 'success');
 }
 function editScoutLead(id) {
   const lead = scoutLeads.find(item => item.id === id);
@@ -2288,6 +2497,21 @@ function startProposalFromLead(id) {
     lead.tags && lead.tags.length ? 'Tags: ' + lead.tags.join(', ') : ''
   ].filter(Boolean).join(' | ');
   document.getElementById('gl').value = notes;
+  updateProposalContext({
+    source: 'scout',
+    sourceId: lead.id,
+    businessName: lead.name || '',
+    contactName: '',
+    website: lead.website || '',
+    phone: lead.phone || '',
+    industry: mapScoutCategoryToIndustry(lead.category),
+    notes: [
+      lead.notes || '',
+      lead.address ? 'Address: ' + lead.address : '',
+      lead.mapsLink ? 'Maps: ' + lead.mapsLink : ''
+    ].filter(Boolean).join('\n'),
+    tags: lead.tags || []
+  }, { openNotes: !!notes });
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 function useScoutLocation() {
@@ -2332,17 +2556,70 @@ function setMeetingField(id, value) {
   const field = document.getElementById(id);
   if (field) field.value = value || '';
 }
-function getMeetingChecklistState() {
-  const state = {};
-  document.querySelectorAll('[data-meeting-check]').forEach(cb => {
-    state[cb.getAttribute('data-meeting-check')] = cb.checked;
-  });
-  return state;
+function serializeMeetingDraft() {
+  return {
+    company: getMeetingField('meetingCompany'),
+    contact: getMeetingField('meetingContact'),
+    website: getMeetingField('meetingWebsite'),
+    type: getMeetingField('meetingType'),
+    date: getMeetingField('meetingDate'),
+    goals: getMeetingField('meetingGoals'),
+    budget: getMeetingField('meetingBudget'),
+    timing: getMeetingField('meetingTiming'),
+    notes: getMeetingField('meetingNotes'),
+    productsInterest: getMeetingField('meetingProductsInterest'),
+    eventPotential: getMeetingField('meetingEventPotential'),
+    objections: getMeetingField('meetingObjections'),
+    nextSteps: getMeetingField('meetingNextSteps'),
+    followupDate: getMeetingField('meetingFollowupDate'),
+    tags: parseTagList(getMeetingField('meetingTags'))
+  };
 }
-function setMeetingChecklistState(state) {
-  document.querySelectorAll('[data-meeting-check]').forEach(cb => {
-    cb.checked = !!(state && state[cb.getAttribute('data-meeting-check')]);
+function persistMeetingDraft() {
+  localStorage.setItem(MEETING_DRAFT_KEY, JSON.stringify(serializeMeetingDraft()));
+}
+function loadMeetingDraft() {
+  try {
+    return JSON.parse(localStorage.getItem(MEETING_DRAFT_KEY) || 'null');
+  } catch (err) {
+    return null;
+  }
+}
+function clearMeetingDraft() {
+  localStorage.removeItem(MEETING_DRAFT_KEY);
+}
+function syncMeetingTagChips() {
+  const tags = parseTagList(getMeetingField('meetingTags'));
+  document.querySelectorAll('[data-tag-chip]').forEach(button => {
+    button.classList.toggle('active', tags.some(tag => tag.toLowerCase() === button.getAttribute('data-tag-chip').toLowerCase()));
   });
+}
+function toggleMeetingTag(tag) {
+  const tags = parseTagList(getMeetingField('meetingTags'));
+  const idx = tags.findIndex(item => item.toLowerCase() === String(tag).toLowerCase());
+  if (idx >= 0) tags.splice(idx, 1);
+  else tags.push(tag);
+  setMeetingField('meetingTags', tags.join(', '));
+  syncMeetingTagChips();
+  persistMeetingDraft();
+}
+function applyMeetingDataToForm(note) {
+  setMeetingField('meetingCompany', note.company);
+  setMeetingField('meetingContact', note.contact);
+  setMeetingField('meetingWebsite', note.website);
+  setMeetingField('meetingType', note.type || 'New Proposal (Prospect)');
+  setMeetingField('meetingDate', note.date || getMeetingToday());
+  setMeetingField('meetingGoals', note.goals);
+  setMeetingField('meetingBudget', note.budget);
+  setMeetingField('meetingTiming', note.timing);
+  setMeetingField('meetingNotes', note.notes);
+  setMeetingField('meetingProductsInterest', note.productsInterest);
+  setMeetingField('meetingEventPotential', note.eventPotential);
+  setMeetingField('meetingObjections', note.objections);
+  setMeetingField('meetingNextSteps', note.nextSteps);
+  setMeetingField('meetingFollowupDate', note.followupDate);
+  setMeetingField('meetingTags', (note.tags || []).join(', '));
+  syncMeetingTagChips();
 }
 function loadMeetingNotes() {
   try {
@@ -2367,65 +2644,78 @@ function renderMeetingNotes() {
     <div class="meeting-card">
       <div class="meeting-card-head">
         <div>
-          <div class="meeting-card-name">${escapeHtml(note.company || 'Untitled Meeting')}</div>
+          <div class="meeting-card-name">${escapeHtml(note.displayName || note.company || note.contact || 'Untitled Meeting')}</div>
           <div class="meeting-card-line">${escapeHtml(note.contact || 'No contact saved')} · ${escapeHtml(note.type || '')}</div>
         </div>
         <div class="meeting-card-date">${escapeHtml(note.date || '')}</div>
       </div>
+      ${note.website ? `<div class="meeting-card-line"><strong>Website:</strong> ${escapeHtml(note.website)}</div>` : ''}
+      ${note.goals ? `<div class="meeting-card-line"><strong>Goals:</strong> ${escapeHtml(note.goals)}</div>` : ''}
+      ${note.budget ? `<div class="meeting-card-line"><strong>Budget:</strong> ${escapeHtml(note.budget)}</div>` : ''}
+      ${note.timing ? `<div class="meeting-card-line"><strong>Timing:</strong> ${escapeHtml(note.timing)}</div>` : ''}
       ${note.nextSteps ? `<div class="meeting-card-line"><strong>Next:</strong> ${escapeHtml(note.nextSteps)}</div>` : ''}
       ${note.followupDate ? `<div class="meeting-card-line"><strong>Follow-Up:</strong> ${escapeHtml(note.followupDate)}</div>` : ''}
       ${note.productsInterest ? `<div class="meeting-card-line"><strong>Products:</strong> ${escapeHtml(note.productsInterest)}</div>` : ''}
-      ${note.marketsInterest ? `<div class="meeting-card-line"><strong>Markets:</strong> ${escapeHtml(note.marketsInterest)}</div>` : ''}
+      ${note.eventPotential ? `<div class="meeting-card-line"><strong>Event Potential:</strong> ${escapeHtml(note.eventPotential)}</div>` : ''}
+      ${note.objections ? `<div class="meeting-card-line"><strong>Concerns:</strong> ${escapeHtml(note.objections)}</div>` : ''}
+      ${note.tags && note.tags.length ? `<div class="scout-tags">${note.tags.map(tag => `<span class="scout-tag">${escapeHtml(tag)}</span>`).join('')}</div>` : ''}
       <div class="meeting-card-actions">
         <button class="meeting-quiet-btn" onclick="editMeetingNote('${note.id}')">Open</button>
         <button class="meeting-quiet-btn" onclick="deleteMeetingNote('${note.id}')">Delete</button>
-        <button class="meeting-btn" onclick="startProposalFromMeeting('${note.id}')">Start Proposal</button>
+        <button class="meeting-btn" onclick="startProposalFromMeeting('${note.id}')">Create Proposal</button>
       </div>
     </div>
   `).join('');
 }
 function clearMeetingForm(resetStatus) {
   editingMeetingId = null;
-  ['meetingCompany','meetingContact','meetingNotes','meetingProductsInterest','meetingMarketsInterest','meetingNextSteps','meetingFollowupDate'].forEach(id => setMeetingField(id, ''));
-  setMeetingField('meetingType', 'New Prospect');
+  ['meetingCompany','meetingContact','meetingWebsite','meetingGoals','meetingBudget','meetingTiming','meetingNotes','meetingProductsInterest','meetingEventPotential','meetingObjections','meetingNextSteps','meetingFollowupDate','meetingTags'].forEach(id => setMeetingField(id, ''));
+  setMeetingField('meetingType', 'New Proposal (Prospect)');
   setMeetingField('meetingDate', getMeetingToday());
-  setMeetingChecklistState({});
+  syncMeetingTagChips();
+  clearMeetingDraft();
   const saveButton = document.getElementById('meetingSaveButton');
   if (saveButton) saveButton.textContent = 'Save Meeting Notes';
   if (resetStatus) setMeetingStatus('Meeting form cleared. Notes will save locally in this browser.', '');
 }
 function buildMeetingProposalNotes(note) {
-  const checkedItems = Object.entries(note.checklist || {}).filter(([, checked]) => checked).map(([label]) => label);
   return [
     note.notes ? 'Meeting notes: ' + note.notes : '',
     note.contact ? 'Contact: ' + note.contact : '',
+    note.website ? 'Website: ' + note.website : '',
     note.date ? 'Meeting date: ' + note.date : '',
-    checkedItems.length ? 'Covered in meeting: ' + checkedItems.join(', ') : '',
+    note.goals ? 'Goals: ' + note.goals : '',
+    note.budget ? 'Budget: ' + note.budget : '',
+    note.timing ? 'Timing: ' + note.timing : '',
     note.productsInterest ? 'Products of interest: ' + note.productsInterest : '',
-    note.marketsInterest ? 'Markets of interest: ' + note.marketsInterest : '',
-    note.nextSteps ? 'Next steps: ' + note.nextSteps : '',
+    note.eventPotential ? 'Event potential: ' + note.eventPotential : '',
+    note.objections ? 'Objections or concerns: ' + note.objections : '',
+    note.nextSteps ? 'Follow-up items: ' + note.nextSteps : '',
     note.followupDate ? 'Follow-up date: ' + note.followupDate : ''
-  ].filter(Boolean).join(' | ');
+  ].filter(Boolean).join(' | ') + (note.tags && note.tags.length ? ' | Tags: ' + note.tags.join(', ') : '');
 }
 function saveMeetingNote() {
-  const company = getMeetingField('meetingCompany');
-  if (!company) {
-    setMeetingStatus('Add a client or company name before saving the meeting notes.', 'error');
-    return;
-  }
   const existing = meetingNotes.find(note => note.id === editingMeetingId);
+  const draft = serializeMeetingDraft();
+  const displayName = draft.company || draft.contact || 'Untitled Meeting';
   const note = {
     id: editingMeetingId || String(Date.now()),
-    company: company,
-    contact: getMeetingField('meetingContact'),
-    type: getMeetingField('meetingType'),
-    date: getMeetingField('meetingDate') || getMeetingToday(),
-    notes: getMeetingField('meetingNotes'),
-    productsInterest: getMeetingField('meetingProductsInterest'),
-    marketsInterest: getMeetingField('meetingMarketsInterest'),
-    nextSteps: getMeetingField('meetingNextSteps'),
-    followupDate: getMeetingField('meetingFollowupDate'),
-    checklist: getMeetingChecklistState(),
+    company: draft.company,
+    contact: draft.contact,
+    website: draft.website,
+    type: draft.type,
+    date: draft.date || getMeetingToday(),
+    goals: draft.goals,
+    budget: draft.budget,
+    timing: draft.timing,
+    notes: draft.notes,
+    productsInterest: draft.productsInterest,
+    eventPotential: draft.eventPotential,
+    objections: draft.objections,
+    nextSteps: draft.nextSteps,
+    followupDate: draft.followupDate,
+    tags: draft.tags,
+    displayName: displayName,
     savedAt: existing?.savedAt || new Date().toISOString()
   };
   if (editingMeetingId) meetingNotes = meetingNotes.map(item => item.id === editingMeetingId ? note : item);
@@ -2439,18 +2729,10 @@ function editMeetingNote(id) {
   const note = meetingNotes.find(item => item.id === id);
   if (!note) return;
   editingMeetingId = id;
-  setMeetingField('meetingCompany', note.company);
-  setMeetingField('meetingContact', note.contact);
-  setMeetingField('meetingType', note.type || 'New Prospect');
-  setMeetingField('meetingDate', note.date || getMeetingToday());
-  setMeetingField('meetingNotes', note.notes);
-  setMeetingField('meetingProductsInterest', note.productsInterest);
-  setMeetingField('meetingMarketsInterest', note.marketsInterest);
-  setMeetingField('meetingNextSteps', note.nextSteps);
-  setMeetingField('meetingFollowupDate', note.followupDate);
-  setMeetingChecklistState(note.checklist || {});
+  applyMeetingDataToForm(note);
   const saveButton = document.getElementById('meetingSaveButton');
   if (saveButton) saveButton.textContent = 'Update Meeting Notes';
+  persistMeetingDraft();
   setMode('meeting');
   setMeetingStatus('Meeting notes loaded.', '');
 }
@@ -2466,30 +2748,47 @@ function deleteMeetingNote(id) {
 }
 function applyMeetingNoteToProposal(note) {
   const type = (note.type || '').toLowerCase();
-  const useRenewal = type === 'renewal' || type === 'existing client';
+  const useRenewal = type === 'renewal' || type === 'existing client' || type === 'renewal (existing client)';
   setMode(useRenewal ? 'renewal' : 'new');
-  document.getElementById('cn').value = note.company || '';
+  document.getElementById('cn').value = note.company || note.contact || '';
+  document.getElementById('wb').value = note.website || '';
+  if (note.goals) document.getElementById('goal').value = note.goals;
+  if (note.budget) document.getElementById('budget').value = note.budget;
+  if (note.timing) document.getElementById('timeline').value = note.timing;
   document.getElementById('gl').value = buildMeetingProposalNotes(note);
   document.getElementById('rel').value = useRenewal ? 'Existing client' : 'Warm lead';
+  updateProposalContext({
+    source: 'meeting',
+    sourceId: note.id || '',
+    businessName: note.company || note.contact || '',
+    contactName: note.contact || '',
+    website: note.website || '',
+    phone: '',
+    industry: '',
+    notes: buildMeetingProposalNotes(note).split(' | ').join('\n'),
+    tags: note.tags || []
+  }, { openNotes: true });
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 function startProposalFromCurrentMeeting() {
+  const draft = serializeMeetingDraft();
   const note = {
-    company: getMeetingField('meetingCompany'),
-    contact: getMeetingField('meetingContact'),
-    type: getMeetingField('meetingType'),
-    date: getMeetingField('meetingDate') || getMeetingToday(),
-    notes: getMeetingField('meetingNotes'),
-    productsInterest: getMeetingField('meetingProductsInterest'),
-    marketsInterest: getMeetingField('meetingMarketsInterest'),
-    nextSteps: getMeetingField('meetingNextSteps'),
-    followupDate: getMeetingField('meetingFollowupDate'),
-    checklist: getMeetingChecklistState()
+    company: draft.company,
+    contact: draft.contact,
+    website: draft.website,
+    type: draft.type,
+    date: draft.date || getMeetingToday(),
+    goals: draft.goals,
+    budget: draft.budget,
+    timing: draft.timing,
+    notes: draft.notes,
+    productsInterest: draft.productsInterest,
+    eventPotential: draft.eventPotential,
+    objections: draft.objections,
+    nextSteps: draft.nextSteps,
+    followupDate: draft.followupDate,
+    tags: draft.tags
   };
-  if (!note.company) {
-    setMeetingStatus('Add the client or company name first so Pitch knows who the proposal is for.', 'error');
-    return;
-  }
   applyMeetingNoteToProposal(note);
 }
 function startProposalFromMeeting(id) {
@@ -2500,11 +2799,53 @@ function startProposalFromMeeting(id) {
 function initMeetingMode() {
   loadMeetingNotes();
   renderMeetingNotes();
+  const draft = loadMeetingDraft();
+  if (draft) applyMeetingDataToForm(draft);
   if (!getMeetingField('meetingDate')) setMeetingField('meetingDate', getMeetingToday());
+  syncMeetingTagChips();
+  ['meetingCompany','meetingContact','meetingWebsite','meetingType','meetingDate','meetingGoals','meetingBudget','meetingTiming','meetingNotes','meetingProductsInterest','meetingEventPotential','meetingObjections','meetingNextSteps','meetingFollowupDate','meetingTags'].forEach(id => {
+    const field = document.getElementById(id);
+    if (!field) return;
+    field.addEventListener('input', function() {
+      if (id === 'meetingTags') syncMeetingTagChips();
+      persistMeetingDraft();
+    });
+    field.addEventListener('change', function() {
+      if (id === 'meetingTags') syncMeetingTagChips();
+      persistMeetingDraft();
+    });
+  });
+}
+function initProposalBuilderBindings() {
+  const businessField = document.getElementById('cn');
+  if (businessField) {
+    businessField.addEventListener('input', function() {
+      if (currentProposalContext) currentProposalContext.businessName = businessField.value.trim();
+      updateProposalHeaderOnly();
+      updateProposalContext(currentProposalContext, { openNotes: proposalNotesOpen });
+    });
+  }
+  const websiteField = document.getElementById('wb');
+  if (websiteField) {
+    websiteField.addEventListener('input', function() {
+      if (currentProposalContext) currentProposalContext.website = websiteField.value.trim();
+      updateProposalContext(currentProposalContext, { openNotes: proposalNotesOpen });
+    });
+  }
+  const notesField = document.getElementById('gl');
+  if (notesField) {
+    notesField.addEventListener('input', function() {
+      if (currentProposalContext && currentProposalContext.source === 'builder') {
+        currentProposalContext.notes = notesField.value.trim();
+        updateProposalContext(currentProposalContext, { openNotes: proposalNotesOpen });
+      }
+    });
+  }
 }
 
 initScout();
 initMeetingMode();
+initProposalBuilderBindings();
 setMode('new');
 
 // ── OUTREACH EMAIL TYPE SWITCHER ──────────────────────
@@ -2773,7 +3114,7 @@ async function generateDiscoveryPrep() {
   const timeline = document.getElementById('timeline')?.value || '';
   const extraContext = document.getElementById('prepExtraContext').value.trim();
 
-  if(!client){alert('Please enter the client name — or fill in the Client Brief on the proposal tab first.');return;}
+  if(!client){alert('Please enter the business name — or fill in Proposal Builder first.');return;}
 
   const btn = document.getElementById('prepBtn');
   btn.disabled = true; btn.textContent = 'Generating questions...';
@@ -2857,13 +3198,13 @@ function renderHistoryList() {
   }
   list.innerHTML = h.map((entry, idx) => `
     <div class="history-item" onclick="loadFromHistory(${idx})">
-      <div class="history-item-name">${entry.client || 'Unnamed Client'}</div>
+      <div class="history-item-name">${entry.client || 'Unnamed Proposal'}</div>
       <div class="history-item-meta">
         <span>${entry.date}</span>
         <span>${entry.industry || ''}</span>
       </div>
       <div class="history-item-total">${entry.total > 0 ? '$' + entry.total.toLocaleString() : 'TBD'}</div>
-      <span class="history-item-mode ${entry.mode === 'renewal' ? 'renewal' : ''}">${entry.mode === 'renewal' ? 'Renewal' : 'New Prospect'}</span>
+      <span class="history-item-mode ${entry.mode === 'renewal' ? 'renewal' : ''}">${entry.mode === 'renewal' ? 'Renewal (Existing Client)' : 'New Proposal (Prospect)'}</span>
     </div>
   `).join('');
 }
@@ -2871,6 +3212,17 @@ function loadFromHistory(idx) {
   const h = getHistory();
   const entry = h[idx];
   if (!entry) return;
+  updateProposalContext({
+    source: 'builder',
+    sourceId: '',
+    businessName: entry.client || '',
+    contactName: '',
+    website: entry.website || '',
+    phone: '',
+    industry: entry.industry || '',
+    notes: entry.notes || '',
+    tags: []
+  }, { openNotes: false });
   // Restore client brief fields
   document.getElementById('cn').value = entry.client || '';
   document.getElementById('wb').value = entry.website || '';
