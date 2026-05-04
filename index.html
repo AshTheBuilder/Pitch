@@ -2022,6 +2022,7 @@ let scoutLeads = [];
 let editingScoutLeadId = null;
 let scoutPlacesPromise = null;
 let scoutPlacesService = null;
+let scoutPinnedLocation = null;
 let meetingNotes = [];
 let editingMeetingId = null;
 let currentProposalContext = null;
@@ -2177,15 +2178,33 @@ function parseScoutTags(raw) {
     .map(tag => tag.trim())
     .filter(Boolean);
 }
+function getMaskedScoutGoogleKey(key) {
+  if (!key) return '';
+  return 'Saved key';
+}
+function syncScoutGoogleKeyField() {
+  const field = document.getElementById('scoutGoogleKey');
+  if (!field) return;
+  const savedKey = localStorage.getItem(SCOUT_GOOGLE_KEY) || '';
+  field.value = savedKey ? getMaskedScoutGoogleKey(savedKey) : '';
+}
+function resetScoutPlacesLoader() {
+  scoutPlacesPromise = null;
+  scoutPlacesService = null;
+  const existingScript = document.getElementById('scoutGooglePlacesScript');
+  if (existingScript) existingScript.remove();
+}
 function loadScoutLeads() {
   try {
     scoutLeads = JSON.parse(localStorage.getItem(SCOUT_LEADS_KEY) || '[]');
   } catch (err) {
     scoutLeads = [];
+    console.error('[Scout] Failed to load saved leads.', err);
   }
 }
 function persistScoutLeads() {
   localStorage.setItem(SCOUT_LEADS_KEY, JSON.stringify(scoutLeads));
+  console.log('[Scout] Leads persisted.', scoutLeads.length);
 }
 function renderScoutLeads() {
   const list = document.getElementById('scoutLeadsList');
@@ -2227,44 +2246,58 @@ function setScoutField(id, value) {
 }
 function clearScoutForm(resetStatus) {
   editingScoutLeadId = null;
+  scoutPinnedLocation = null;
   ['scoutBusinessName','scoutCategory','scoutPhone','scoutWebsite','scoutAddress','scoutMapsLink','scoutHours','scoutNotes','scoutTags'].forEach(id => setScoutField(id, ''));
   const saveButton = document.getElementById('scoutSaveButton');
   if (saveButton) saveButton.textContent = 'Save Lead';
   if (resetStatus) setScoutStatus('Scout form cleared. Tap the map or search to capture a lead.', '');
 }
 function saveScoutGoogleKey() {
-  const key = getScoutField('scoutGoogleKey');
+  const savedKey = localStorage.getItem(SCOUT_GOOGLE_KEY) || '';
+  const visibleValue = getScoutField('scoutGoogleKey');
+  const key = visibleValue === getMaskedScoutGoogleKey(savedKey) ? savedKey : visibleValue;
   if (key) {
     localStorage.setItem(SCOUT_GOOGLE_KEY, key);
-    scoutPlacesPromise = null;
-    scoutPlacesService = null;
+    resetScoutPlacesLoader();
+    syncScoutGoogleKeyField();
+    console.log('[Scout] Google Places key saved.');
     setScoutStatus('Google Places key saved. Scout will use richer place details on the next search.', 'success');
-    ensureScoutPlaces().catch(err => setScoutStatus(err.message, 'error'));
+    ensureScoutPlaces().catch(err => {
+      console.error('[Scout] Google Places failed to load after key save.', err);
+      setScoutStatus(err.message, 'error');
+    });
   } else {
     localStorage.removeItem(SCOUT_GOOGLE_KEY);
-    scoutPlacesPromise = null;
-    scoutPlacesService = null;
+    resetScoutPlacesLoader();
+    syncScoutGoogleKeyField();
+    console.log('[Scout] Google Places key removed.');
     setScoutStatus('Google Places key removed. Scout will use map search and manual entry.', '');
   }
 }
 function ensureScoutPlaces() {
   const key = localStorage.getItem(SCOUT_GOOGLE_KEY);
   if (!key) return Promise.reject(new Error('No Google Places key saved yet.'));
-  if (window.google && google.maps && google.maps.places) return Promise.resolve(google.maps);
+  if (window.google && google.maps && google.maps.places) {
+    console.log('[Scout] Google Maps / Places already loaded.');
+    return Promise.resolve(google.maps);
+  }
   if (scoutPlacesPromise) return scoutPlacesPromise;
   scoutPlacesPromise = new Promise((resolve, reject) => {
     const callbackName = '__scoutPlacesReady_' + Date.now();
     window[callbackName] = function() {
       delete window[callbackName];
+      console.log('[Scout] Google Maps / Places loaded.');
       resolve(google.maps);
     };
     const script = document.createElement('script');
+    script.id = 'scoutGooglePlacesScript';
     script.src = 'https://maps.googleapis.com/maps/api/js?key=' + encodeURIComponent(key) + '&libraries=places&callback=' + callbackName;
     script.async = true;
     script.onerror = function() {
       delete window[callbackName];
-      scoutPlacesPromise = null;
-      reject(new Error('Google Places failed to load. Check the API key and allowed domains.'));
+      resetScoutPlacesLoader();
+      console.error('[Scout] Google Maps script failed to load.');
+      reject(new Error('Google Places failed to load. Check the API key, enabled APIs, and allowed referrers.'));
     };
     document.head.appendChild(script);
   });
@@ -2276,7 +2309,10 @@ function getScoutPlacesService() {
   return scoutPlacesService;
 }
 function initScoutMap() {
-  if (scoutMap || !window.L || !document.getElementById('scoutMap')) return;
+  if (scoutMap || !window.L || !document.getElementById('scoutMap')) {
+    if (!window.L) console.error('[Scout] Leaflet failed to load.');
+    return;
+  }
   scoutMap = L.map('scoutMap', { zoomControl: true }).setView([30.2672, -97.7431], 12);
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '&copy; OpenStreetMap contributors'
@@ -2299,18 +2335,29 @@ function setScoutMarker(lat, lng, options) {
   }
   if (markerOptions.center !== false) scoutMap.setView([lat, lng], Math.max(scoutMap.getZoom(), 14));
   if (markerOptions.manual) {
+    scoutPinnedLocation = { lat: Number(lat), lng: Number(lng), source: 'manual' };
     const mapsLink = 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(lat + ',' + lng);
     setScoutField('scoutMapsLink', mapsLink);
+    if (!getScoutField('scoutBusinessName')) setScoutField('scoutBusinessName', 'Pinned location');
+    console.log('[Scout] Manual pin saved to form context.', scoutPinnedLocation);
     reverseScoutLookup(lat, lng);
+  } else {
+    scoutPinnedLocation = { lat: Number(lat), lng: Number(lng), source: 'search' };
   }
 }
 async function reverseScoutLookup(lat, lng) {
   try {
     const res = await fetch('https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=' + encodeURIComponent(lat) + '&lon=' + encodeURIComponent(lng));
     const data = await res.json();
-    if (!getScoutField('scoutAddress') && data.display_name) setScoutField('scoutAddress', data.display_name);
+    if (data.display_name) {
+      if (getScoutField('scoutBusinessName') === 'Pinned location') {
+        setScoutField('scoutBusinessName', data.display_name.split(',')[0]);
+      }
+      if (!getScoutField('scoutAddress')) setScoutField('scoutAddress', data.display_name);
+    }
     setScoutStatus('Pin dropped. Add a few notes and save the lead when you are ready.', '');
   } catch (err) {
+    console.error('[Scout] Reverse lookup failed for manual pin.', err);
     setScoutStatus('Pin dropped. Reverse lookup could not load, but you can still save the lead manually.', 'error');
   }
 }
@@ -2335,6 +2382,7 @@ async function searchScoutBusinesses() {
     setScoutStatus('Enter a business name, address, or area to search.', 'error');
     return;
   }
+  console.log('[Scout] Search started.', { query });
   setScoutStatus('Searching nearby businesses...', '');
   normalizeScoutSearchResults([]);
   const hasGoogleKey = !!localStorage.getItem(SCOUT_GOOGLE_KEY);
@@ -2342,6 +2390,7 @@ async function searchScoutBusinesses() {
     try {
       await ensureScoutPlaces();
       const service = getScoutPlacesService();
+      if (!service) throw new Error('Google Places loaded, but the Places service did not initialize.');
       const center = scoutMap ? scoutMap.getCenter() : { lat: 30.2672, lng: -97.7431 };
       const results = await new Promise((resolve, reject) => {
         service.textSearch({
@@ -2356,6 +2405,7 @@ async function searchScoutBusinesses() {
           resolve(found.slice(0, 8));
         });
       });
+      console.log('[Scout] Place found.', results[0]?.name || 'unknown');
       normalizeScoutSearchResults(results.map(place => ({
         source: 'google',
         placeId: place.place_id,
@@ -2368,7 +2418,8 @@ async function searchScoutBusinesses() {
       setScoutStatus('Select a result to pull richer business details into the lead form.', '');
       return;
     } catch (err) {
-      setScoutStatus('Google Places search missed. Falling back to map search results.', 'error');
+      console.error('[Scout] Google Places search failed.', err);
+      setScoutStatus('Google Places search failed: ' + err.message + ' Falling back to map search results.', 'error');
     }
   }
   try {
@@ -2386,6 +2437,7 @@ async function searchScoutBusinesses() {
     })));
     setScoutStatus(data.length ? 'Search results ready. Select one to prefill the lead form.' : 'No results found. Drop a pin and enter the lead manually.', data.length ? '' : 'error');
   } catch (err) {
+    console.error('[Scout] Fallback map search failed.', err);
     setScoutStatus('Search could not load right now. You can still use manual pin mode and save the lead.', 'error');
   }
 }
@@ -2397,6 +2449,7 @@ async function selectScoutResult(index) {
     try {
       await ensureScoutPlaces();
       const service = getScoutPlacesService();
+      if (!service) throw new Error('Google Places details could not initialize.');
       const details = await new Promise((resolve, reject) => {
         service.getDetails({
           placeId: item.placeId,
@@ -2409,6 +2462,7 @@ async function selectScoutResult(index) {
           resolve(place);
         });
       });
+      console.log('[Scout] Place found.', details.name || item.name || 'unknown');
       populateScoutLeadForm({
         name: details.name,
         address: details.formatted_address,
@@ -2423,6 +2477,7 @@ async function selectScoutResult(index) {
       setScoutStatus('Business details loaded from Google Places. Add notes or tags, then save the lead.', 'success');
       return;
     } catch (err) {
+      console.error('[Scout] Google Places details failed.', err);
       setScoutStatus(err.message, 'error');
     }
   }
@@ -2437,10 +2492,13 @@ function populateScoutLeadForm(data) {
   setScoutField('scoutAddress', data.address || '');
   setScoutField('scoutMapsLink', data.mapsLink || '');
   setScoutField('scoutHours', Array.isArray(data.hours) ? data.hours.join('\n') : (data.hours || ''));
+  if (data.lat && data.lng) scoutPinnedLocation = { lat: Number(data.lat), lng: Number(data.lng), source: data.source || 'search' };
   if (data.lat && data.lng) setScoutMarker(data.lat, data.lng, { center: true });
 }
 function saveScoutLead() {
-  const name = getScoutField('scoutBusinessName');
+  let name = getScoutField('scoutBusinessName');
+  if (!name && getScoutField('scoutAddress')) name = getScoutField('scoutAddress').split(',')[0];
+  if (!name && scoutPinnedLocation) name = 'Pinned location (' + scoutPinnedLocation.lat.toFixed(4) + ', ' + scoutPinnedLocation.lng.toFixed(4) + ')';
   if (!name) {
     setScoutStatus('Add at least a business name before saving the lead.', 'error');
     return;
@@ -2457,6 +2515,8 @@ function saveScoutLead() {
     hours: getScoutField('scoutHours'),
     notes: getScoutField('scoutNotes'),
     tags: parseScoutTags(getScoutField('scoutTags')),
+    lat: scoutPinnedLocation?.lat ?? existingLead?.lat ?? null,
+    lng: scoutPinnedLocation?.lng ?? existingLead?.lng ?? null,
     dateAdded: existingLead?.dateAdded || new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
   };
   if (editingScoutLeadId) {
@@ -2467,12 +2527,15 @@ function saveScoutLead() {
   persistScoutLeads();
   renderScoutLeads();
   clearScoutForm(false);
+  if (lead.lat && lead.lng) console.log('[Scout] Manual pin saved.', { lat: lead.lat, lng: lead.lng });
+  console.log('[Scout] Lead saved.', lead.name);
   setScoutStatus('Lead saved. Use Start Proposal whenever you want to move it into Proposal Builder.', 'success');
 }
 function editScoutLead(id) {
   const lead = scoutLeads.find(item => item.id === id);
   if (!lead) return;
   editingScoutLeadId = id;
+  scoutPinnedLocation = lead.lat && lead.lng ? { lat: Number(lead.lat), lng: Number(lead.lng), source: 'saved' } : null;
   populateScoutLeadForm(lead);
   setScoutField('scoutNotes', lead.notes || '');
   setScoutField('scoutTags', (lead.tags || []).join(', '));
@@ -2556,13 +2619,23 @@ function useScoutLocation() {
     if (scoutMap) scoutMap.setView([lat, lng], 15);
     setScoutMarker(lat, lng, { manual: true });
     setScoutStatus('Current location loaded. Tap nearby businesses or add notes and save the lead.', 'success');
-  }, function() {
-    setScoutStatus('Location access was blocked. You can still drop a pin manually.', 'error');
+  }, function(error) {
+    console.error('[Scout] Location access failed.', error);
+    const isFileProtocol = window.location.protocol === 'file:';
+    const locationMessage = isFileProtocol
+      ? 'Location access is blocked because this page is opened as a local file (`file://`). Browsers often restrict geolocation there. Use manual pin mode instead.'
+      : error && error.code === 1
+        ? 'Location access was denied by the browser. You can still drop a pin manually.'
+        : error && error.code === 2
+          ? 'Location could not be determined right now. You can still drop a pin manually.'
+          : error && error.code === 3
+            ? 'Location request timed out. You can still drop a pin manually.'
+            : 'Location access was blocked. You can still drop a pin manually.';
+    setScoutStatus(locationMessage, 'error');
   }, { enableHighAccuracy: true, timeout: 12000 });
 }
 function initScout() {
-  const key = localStorage.getItem(SCOUT_GOOGLE_KEY) || '';
-  setScoutField('scoutGoogleKey', key);
+  syncScoutGoogleKeyField();
   loadScoutLeads();
   renderScoutLeads();
   initScoutMap();
