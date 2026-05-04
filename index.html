@@ -2229,7 +2229,7 @@ function ensureScoutPlaces() {
       resolve(google.maps);
     };
     const script = document.createElement('script');
-    script.src = 'https://maps.googleapis.com/maps/api/js?key=' + encodeURIComponent(key) + '&libraries=places&callback=' + callbackName;
+    script.src = 'https://maps.googleapis.com/maps/api/js?key=AIzaSyDqeHewzARw__NorzJWJb3NucCUeiClMjQ&libraries=places'' + encodeURIComponent(key) + '&libraries=places&callback=' + callbackName;
     script.async = true;
     script.onerror = function() {
       delete window[callbackName];
