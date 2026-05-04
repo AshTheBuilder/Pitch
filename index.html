@@ -681,7 +681,7 @@ select{
         </div>
 
         <div class="scout-key-row">
-          <input type="text" id="scoutGoogleKey" placeholder="Optional Google Places API key">
+          <input type="text" id="scoutGoogleKey" placeholder="Optional Google Places API key" onkeydown="if(event.key==='Enter')saveScoutGoogleKey()">
           <button class="scout-quiet-btn" onclick="saveScoutGoogleKey()">Save Key</button>
           <span class="scout-meta">If available, Scout will pull richer business details from Google Places.</span>
         </div>
@@ -1036,7 +1036,7 @@ select{
       <p>Saved to this browser only. Never shared.</p>
       <div class="api-row">
         <input type="text" id="apiKey" placeholder="sk-ant-..." onkeydown="if(event.key==='Enter')saveKey()">
-        <button class="api-save" onclick="saveKey()">Save</button>
+        <button class="api-save" id="saveApiKeyButton">Save</button>
       </div>
     </div>
 
@@ -1051,7 +1051,7 @@ select{
         <div class="field" style="margin-bottom:0;"><label>Phone</label><input type="text" id="repPhone" placeholder="281.705.8383"></div>
         <div class="field" style="margin-bottom:0;"><label>Email</label><input type="text" id="repEmail" placeholder="ashley@tribeza.com"></div>
       </div>
-      <button class="api-save" style="margin-top:8px;background:#3B6D11;width:100%;padding:8px;" onclick="saveRep()">Save my info</button>
+      <button class="api-save" id="saveRepButton" style="margin-top:8px;background:#3B6D11;width:100%;padding:8px;">Save my info</button>
       <div id="repSaved" style="font-size:0.68rem;color:#3B6D11;margin-top:5px;display:none;">Saved! Your info will appear on all proposals.</div>
     </div>
 
@@ -1331,8 +1331,32 @@ select{
 
 <script>
 let API_KEY=localStorage.getItem('tp_api_key')||'';
-if(API_KEY)document.getElementById('setupBanner').style.display='none';
-function saveKey(){const k=document.getElementById('apiKey').value.trim();if(!k){alert('Please enter your Anthropic API key.');return;}API_KEY=k;localStorage.setItem('tp_api_key',k);document.getElementById('setupBanner').style.display='none';document.getElementById('apiKey').value='';}
+function getMaskedApiKey(key){
+  if(!key)return'';
+  if(key.length<=8)return key;
+  return key.slice(0,6)+'••••'+key.slice(-4);
+}
+function hydrateApiKeyField(){
+  const apiKeyField=document.getElementById('apiKey');
+  if(!apiKeyField)return;
+  if(API_KEY){
+    document.getElementById('setupBanner').style.display='none';
+    apiKeyField.value=getMaskedApiKey(API_KEY);
+  }else{
+    apiKeyField.value='';
+  }
+}
+function saveKey(){
+  const apiKeyField=document.getElementById('apiKey');
+  const typedValue=apiKeyField.value.trim();
+  const maskedValue=getMaskedApiKey(API_KEY);
+  const k=typedValue===maskedValue?API_KEY:typedValue;
+  if(!k){alert('Please enter your Anthropic API key.');return;}
+  API_KEY=k;
+  localStorage.setItem('tp_api_key',k);
+  document.getElementById('setupBanner').style.display='none';
+  hydrateApiKeyField();
+}
 function saveRep(){
   const n=document.getElementById('repName').value.trim();
   const t=document.getElementById('repTitle').value.trim();
@@ -1346,6 +1370,10 @@ function saveRep(){
   updateHeader();
   document.getElementById('repSaved').style.display='block';
   setTimeout(()=>{document.getElementById('repBanner').style.display='none';},1500);
+}
+function bindSettingsButtons(){
+  document.getElementById('saveApiKeyButton')?.addEventListener('click',saveKey);
+  document.getElementById('saveRepButton')?.addEventListener('click',saveRep);
 }
 function updateHeader(){
   const n=localStorage.getItem('rep_name')||'Ashley Sauls';
@@ -1363,6 +1391,8 @@ function updateHeader(){
   document.getElementById('repEmail').value=localStorage.getItem('rep_email')||'';
   if(localStorage.getItem('rep_name'))document.getElementById('repBanner').style.display='none';
 }
+bindSettingsButtons();
+hydrateApiKeyField();
 updateHeader();
 const printMkts=new Set(),digMkts=new Set();
 function toggleMkt(type,name){const isP=type==='print';const set=isP?printMkts:digMkts;const idMap=isP?{'Dallas':'pm-dallas','Houston':'pm-houston'}:{'Dallas':'dm-dallas','Houston':'dm-houston','Fort Worth':'dm-ftworth','The Woodlands':'dm-woodlands'};const selId=isP?'print-mkt-sel':'dig-mkt-sel';if(set.has(name)){set.delete(name);document.getElementById(idMap[name]).classList.remove('active');}else{set.add(name);document.getElementById(idMap[name]).classList.add('active');}const arr=Array.from(set);const el=document.getElementById(selId);el.textContent=arr.length?arr.length+' market'+(arr.length>1?'s':'')+': '+arr.join(', '):'';recalc();}
@@ -2229,7 +2259,7 @@ function ensureScoutPlaces() {
       resolve(google.maps);
     };
     const script = document.createElement('script');
-    script.src = 'https://maps.googleapis.com/maps/api/js?key=AIzaSyDqeHewzARw__NorzJWJb3NucCUeiClMjQ&libraries=places'' + encodeURIComponent(key) + '&libraries=places&callback=' + callbackName;
+    script.src = 'https://maps.googleapis.com/maps/api/js?key=' + encodeURIComponent(key) + '&libraries=places&callback=' + callbackName;
     script.async = true;
     script.onerror = function() {
       delete window[callbackName];
