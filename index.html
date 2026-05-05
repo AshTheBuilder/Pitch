@@ -2187,6 +2187,7 @@ function syncScoutGoogleKeyField() {
   if (!field) return;
   const savedKey = localStorage.getItem(SCOUT_GOOGLE_KEY) || '';
   field.value = savedKey ? getMaskedScoutGoogleKey(savedKey) : '';
+  field.setAttribute('data-has-saved-key', savedKey ? 'true' : 'false');
 }
 function resetScoutPlacesLoader() {
   scoutPlacesPromise = null;
@@ -2260,6 +2261,11 @@ function saveScoutGoogleKey() {
     localStorage.setItem(SCOUT_GOOGLE_KEY, key);
     resetScoutPlacesLoader();
     syncScoutGoogleKeyField();
+    const field = document.getElementById('scoutGoogleKey');
+    if (field) {
+      field.value = 'Saved key';
+      field.blur();
+    }
     console.log('[Scout] Google Places key saved.');
     setScoutStatus('Google Places key saved. Scout will use richer place details on the next search.', 'success');
     ensureScoutPlaces().catch(err => {
@@ -2336,29 +2342,32 @@ function setScoutMarker(lat, lng, options) {
   if (markerOptions.center !== false) scoutMap.setView([lat, lng], Math.max(scoutMap.getZoom(), 14));
   if (markerOptions.manual) {
     scoutPinnedLocation = { lat: Number(lat), lng: Number(lng), source: 'manual' };
-    const mapsLink = 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(lat + ',' + lng);
+    const mapsLink = buildScoutMapsLink('', lat, lng);
     setScoutField('scoutMapsLink', mapsLink);
     if (!getScoutField('scoutBusinessName')) setScoutField('scoutBusinessName', 'Pinned location');
     console.log('[Scout] Manual pin saved to form context.', scoutPinnedLocation);
-    reverseScoutLookup(lat, lng);
+    autoPopulateScoutFromCoordinates(lat, lng, markerOptions.originLabel || 'pin drop');
   } else {
     scoutPinnedLocation = { lat: Number(lat), lng: Number(lng), source: 'search' };
   }
 }
-async function reverseScoutLookup(lat, lng) {
+async function reverseScoutLookup(lat, lng, options) {
+  const lookupOptions = options || {};
   try {
-    const res = await fetch('https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=' + encodeURIComponent(lat) + '&lon=' + encodeURIComponent(lng));
+    const res = await fetch('https://nominatim.openstreetmap.org/reverse?format=jsonv2&addressdetails=1&namedetails=1&extratags=1&lat=' + encodeURIComponent(lat) + '&lon=' + encodeURIComponent(lng));
     const data = await res.json();
-    if (data.display_name) {
+    if (data.display_name && !lookupOptions.silent) {
       if (getScoutField('scoutBusinessName') === 'Pinned location') {
-        setScoutField('scoutBusinessName', data.display_name.split(',')[0]);
+        setScoutField('scoutBusinessName', data.namedetails?.name || data.display_name.split(',')[0]);
       }
       if (!getScoutField('scoutAddress')) setScoutField('scoutAddress', data.display_name);
     }
-    setScoutStatus('Pin dropped. Add a few notes and save the lead when you are ready.', '');
+    if (!lookupOptions.silent) setScoutStatus('Pin dropped. Add a few notes and save the lead when you are ready.', '');
+    return data;
   } catch (err) {
     console.error('[Scout] Reverse lookup failed for manual pin.', err);
-    setScoutStatus('Pin dropped. Reverse lookup could not load, but you can still save the lead manually.', 'error');
+    if (!lookupOptions.silent) setScoutStatus('Pin dropped. Reverse lookup could not load, but you can still save the lead manually.', 'error');
+    throw err;
   }
 }
 function normalizeScoutSearchResults(items) {
@@ -2375,6 +2384,144 @@ function normalizeScoutSearchResults(items) {
       <span class="scout-result-meta">${escapeHtml(item.meta || item.address || '')}</span>
     </button>
   `).join('');
+}
+function getScoutGooglePlacesError() {
+  const logs = Array.from(document.querySelectorAll('script[src*="maps.googleapis.com"]'));
+  return logs.length ? null : null;
+}
+function mapOsmCategory(item) {
+  return [item.addresstype, item.type, item.class].filter(Boolean).join(' / ');
+}
+function getOsmExtraTag(item, keys) {
+  const tags = item.extratags || {};
+  return keys.map(key => tags[key]).find(Boolean) || '';
+}
+function buildScoutMapsLink(label, lat, lng) {
+  const query = label ? (label + ' ' + lat + ',' + lng) : (lat + ',' + lng);
+  return 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(query);
+}
+function getScoutDistanceMeters(lat1, lng1, lat2, lng2) {
+  const toRad = value => value * Math.PI / 180;
+  const earthRadius = 6371000;
+  const dLat = toRad(lat2 - lat1);
+  const dLng = toRad(lng2 - lng1);
+  const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLng / 2) * Math.sin(dLng / 2);
+  return earthRadius * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+}
+function isScoutRoadLikeCategory(category) {
+  const raw = String(category || '').toLowerCase();
+  return ['road','highway','primary','secondary','tertiary','residential','service','footway','cycleway','path','route','motorway','trunk','street','intersection'].some(term => raw.includes(term));
+}
+function isScoutBusinessLikeResult(item) {
+  const rawCategory = String(item?.category || '').toLowerCase();
+  const rawMeta = String(item?.meta || '').toLowerCase();
+  const rawName = String(item?.name || '').toLowerCase();
+  const rawAddress = String(item?.address || '').toLowerCase();
+  if (!rawName || rawName === 'nearby place' || rawName === 'map result' || rawName === 'pinned location') return false;
+  if (isScoutRoadLikeCategory(rawCategory)) return false;
+  if (['avenue','street','road','boulevard','drive','lane','highway','freeway'].some(term => rawName === term || rawName.endsWith(' ' + term))) return false;
+  if (['amenity','shop','tourism','office','leisure','craft','building'].some(term => rawCategory.includes(term))) return true;
+  if (item?.website || item?.phone || item?.hours) return true;
+  if (rawMeta.includes('hotel') || rawMeta.includes('restaurant') || rawMeta.includes('bar') || rawMeta.includes('cafe') || rawMeta.includes('store') || rawMeta.includes('office')) return true;
+  if (rawAddress && !isScoutRoadLikeCategory(rawAddress) && rawName !== rawAddress.split(',')[0].trim().toLowerCase()) return true;
+  return false;
+}
+function chooseBestScoutNearbyResult(items, lat, lng) {
+  if (!Array.isArray(items) || !items.length) return null;
+  const candidates = items.filter(isScoutBusinessLikeResult);
+  const pool = candidates.length ? candidates : items;
+  return pool.slice().sort((a, b) => {
+    const aDist = getScoutDistanceMeters(lat, lng, Number(a.lat || lat), Number(a.lng || lng));
+    const bDist = getScoutDistanceMeters(lat, lng, Number(b.lat || lat), Number(b.lng || lng));
+    const aScore = (isScoutBusinessLikeResult(a) ? 150 : 0) + (a.website ? 20 : 0) + (a.phone ? 15 : 0) + (a.hours ? 10 : 0) - aDist;
+    const bScore = (isScoutBusinessLikeResult(b) ? 150 : 0) + (b.website ? 20 : 0) + (b.phone ? 15 : 0) + (b.hours ? 10 : 0) - bDist;
+    return bScore - aScore;
+  })[0];
+}
+async function searchNearbyBusinessesFromGoogle(lat, lng) {
+  await ensureScoutPlaces();
+  const service = getScoutPlacesService();
+  if (!service) throw new Error('Google Places loaded, but the Places service did not initialize.');
+  const results = await new Promise((resolve, reject) => {
+    const timeoutId = window.setTimeout(() => reject(new Error('Nearby Google Places search timed out.')), 4500);
+    service.nearbySearch({
+      location: new google.maps.LatLng(lat, lng),
+      radius: 150
+    }, function(found, status) {
+      window.clearTimeout(timeoutId);
+      if (status !== google.maps.places.PlacesServiceStatus.OK || !found || !found.length) {
+        reject(new Error('No nearby Google Places businesses found at that location.'));
+        return;
+      }
+      resolve(found.slice(0, 8));
+    });
+  });
+  return results.map(place => ({
+    source: 'google',
+    placeId: place.place_id,
+    name: place.name,
+    address: place.vicinity || place.formatted_address || '',
+    meta: [place.types?.[0], place.vicinity || place.formatted_address].filter(Boolean).join(' • '),
+    category: place.types?.[0]?.replace(/_/g, ' ') || '',
+    lat: place.geometry?.location?.lat?.(),
+    lng: place.geometry?.location?.lng?.(),
+    mapsLink: buildScoutMapsLink(place.name || '', place.geometry?.location?.lat?.() || lat, place.geometry?.location?.lng?.() || lng)
+  }));
+}
+async function searchNearbyBusinessesFromNominatimArea(lat, lng, seedText) {
+  const delta = 0.003;
+  const viewbox = [lng - delta, lat + delta, lng + delta, lat - delta].join(',');
+  const query = seedText || 'business';
+  const res = await fetch('https://nominatim.openstreetmap.org/search?format=jsonv2&limit=8&bounded=1&addressdetails=1&namedetails=1&extratags=1&viewbox=' + encodeURIComponent(viewbox) + '&q=' + encodeURIComponent(query));
+  const data = await res.json();
+  return (data || []).map(item => ({
+    source: 'osm',
+    name: item.namedetails?.name || (item.display_name ? item.display_name.split(',')[0] : 'Map result'),
+    address: item.display_name || '',
+    meta: [item.type, item.display_name].filter(Boolean).join(' • '),
+    category: mapOsmCategory(item),
+    phone: getOsmExtraTag(item, ['contact:phone','phone']),
+    website: getOsmExtraTag(item, ['contact:website','website','url']),
+    hours: getOsmExtraTag(item, ['opening_hours']),
+    lat: parseFloat(item.lat),
+    lng: parseFloat(item.lon),
+    mapsLink: buildScoutMapsLink(item.namedetails?.name || item.display_name || '', item.lat, item.lon)
+  })).filter(isScoutBusinessLikeResult);
+}
+async function searchNearbyBusinessesFromOsm(lat, lng, seedText) {
+  const overpassQuery = `[out:json][timeout:8];(node(around:150,${lat},${lng})[name][amenity];node(around:150,${lat},${lng})[name][shop];node(around:150,${lat},${lng})[name][tourism];node(around:150,${lat},${lng})[name][office];node(around:150,${lat},${lng})[name][leisure];way(around:150,${lat},${lng})[name][amenity];way(around:150,${lat},${lng})[name][shop];way(around:150,${lat},${lng})[name][tourism];way(around:150,${lat},${lng})[name][office];way(around:150,${lat},${lng})[name][leisure];relation(around:150,${lat},${lng})[name][amenity];relation(around:150,${lat},${lng})[name][shop];relation(around:150,${lat},${lng})[name][tourism];relation(around:150,${lat},${lng})[name][office];relation(around:150,${lat},${lng})[name][leisure];);out center tags 12;`;
+  try {
+    const res = await fetch('https://overpass-api.de/api/interpreter', {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=UTF-8' },
+      body: overpassQuery
+    });
+    const data = await res.json();
+    return (data.elements || []).map(item => {
+      const tags = item.tags || {};
+      const itemLat = item.lat ?? item.center?.lat ?? lat;
+      const itemLng = item.lon ?? item.center?.lon ?? lng;
+      const category = [tags.amenity, tags.tourism, tags.shop, tags.leisure, tags.office, tags.craft, tags.building].filter(Boolean)[0] || '';
+      const addressBits = [tags['addr:housenumber'], tags['addr:street'], tags['addr:city'], tags['addr:state'], tags['addr:postcode']].filter(Boolean);
+      return {
+        source: 'osm-nearby',
+        name: tags.name || 'Nearby place',
+        address: addressBits.join(' ') || '',
+        meta: [category, addressBits.join(' ')].filter(Boolean).join(' • ') || 'Nearby business',
+        category: category.replace(/_/g, ' '),
+        phone: tags['contact:phone'] || tags.phone || '',
+        website: tags['contact:website'] || tags.website || tags.url || '',
+        hours: tags.opening_hours || '',
+        lat: Number(itemLat),
+        lng: Number(itemLng),
+        mapsLink: buildScoutMapsLink(tags.name || '', itemLat, itemLng)
+      };
+    }).filter(item => item.name).filter(isScoutBusinessLikeResult);
+  } catch (err) {
+    console.error('[Scout] Overpass lookup failed, falling back to bounded Nominatim search.', err);
+    return searchNearbyBusinessesFromNominatimArea(lat, lng, seedText);
+  }
 }
 async function searchScoutBusinesses() {
   const query = getScoutField('scoutSearch');
@@ -2393,11 +2540,15 @@ async function searchScoutBusinesses() {
       if (!service) throw new Error('Google Places loaded, but the Places service did not initialize.');
       const center = scoutMap ? scoutMap.getCenter() : { lat: 30.2672, lng: -97.7431 };
       const results = await new Promise((resolve, reject) => {
+        const timeoutId = window.setTimeout(() => {
+          reject(new Error('Google Places search timed out. The key may be missing Maps JavaScript API access.'));
+        }, 4500);
         service.textSearch({
           query: query,
           location: new google.maps.LatLng(center.lat, center.lng),
           radius: 8000
         }, function(found, status) {
+          window.clearTimeout(timeoutId);
           if (status !== google.maps.places.PlacesServiceStatus.OK || !found || !found.length) {
             reject(new Error('No Google Places results found for that search.'));
             return;
@@ -2423,23 +2574,85 @@ async function searchScoutBusinesses() {
     }
   }
   try {
-    const res = await fetch('https://nominatim.openstreetmap.org/search?format=jsonv2&limit=8&countrycodes=us&q=' + encodeURIComponent(query));
+    const res = await fetch('https://nominatim.openstreetmap.org/search?format=jsonv2&limit=8&countrycodes=us&addressdetails=1&namedetails=1&extratags=1&q=' + encodeURIComponent(query));
     const data = await res.json();
     normalizeScoutSearchResults((data || []).map(item => ({
       source: 'osm',
-      name: item.display_name ? item.display_name.split(',')[0] : 'Map result',
+      name: item.namedetails?.name || (item.display_name ? item.display_name.split(',')[0] : 'Map result'),
       address: item.display_name || '',
       meta: [item.type, item.display_name].filter(Boolean).join(' • '),
-      category: item.type || '',
+      category: mapOsmCategory(item),
+      phone: getOsmExtraTag(item, ['contact:phone','phone']),
+      website: getOsmExtraTag(item, ['contact:website','website','url']),
+      hours: getOsmExtraTag(item, ['opening_hours']),
       lat: parseFloat(item.lat),
       lng: parseFloat(item.lon),
-      mapsLink: 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent((item.display_name || '') + ' ' + item.lat + ',' + item.lon)
+      mapsLink: buildScoutMapsLink(item.namedetails?.name || item.display_name || '', item.lat, item.lon)
     })));
+    console.log('[Scout] Fallback search returned.', Array.isArray(data) ? data.length : 0);
     setScoutStatus(data.length ? 'Search results ready. Select one to prefill the lead form.' : 'No results found. Drop a pin and enter the lead manually.', data.length ? '' : 'error');
   } catch (err) {
     console.error('[Scout] Fallback map search failed.', err);
     setScoutStatus('Search could not load right now. You can still use manual pin mode and save the lead.', 'error');
   }
+}
+async function autoPopulateScoutFromCoordinates(lat, lng, originLabel) {
+  console.log('[Scout] Coordinate lookup started.', { lat, lng, origin: originLabel });
+  setScoutStatus('Finding nearby businesses for this ' + originLabel + '...', '');
+  let reverseData = null;
+  try {
+    reverseData = await reverseScoutLookup(lat, lng, { silent: true });
+  } catch (err) {
+    console.error('[Scout] Reverse lookup failed during coordinate search.', err);
+  }
+  const hasGoogleKey = !!localStorage.getItem(SCOUT_GOOGLE_KEY);
+  if (hasGoogleKey) {
+    try {
+      const googleResults = await searchNearbyBusinessesFromGoogle(lat, lng);
+      normalizeScoutSearchResults(googleResults);
+      const bestGoogleResult = chooseBestScoutNearbyResult(googleResults, lat, lng);
+      if (bestGoogleResult) {
+        await selectScoutResult(googleResults.findIndex(item => item === bestGoogleResult));
+        setScoutStatus('Nearby businesses found for this ' + originLabel + '. Best match loaded; choose another option below if needed.', 'success');
+        return;
+      }
+    } catch (err) {
+      console.error('[Scout] Nearby Google Places lookup failed.', err);
+      setScoutStatus('Google nearby search missed. Trying map data instead...', 'error');
+    }
+  }
+  try {
+    const nearbySeed = reverseData?.address?.road || reverseData?.address?.pedestrian || reverseData?.address?.neighbourhood || reverseData?.address?.suburb || reverseData?.namedetails?.name || reverseData?.display_name?.split(',')[0] || 'business';
+    const nearbyOsmResults = await searchNearbyBusinessesFromOsm(lat, lng, nearbySeed);
+    if (nearbyOsmResults.length) {
+      normalizeScoutSearchResults(nearbyOsmResults);
+      const bestOsmResult = chooseBestScoutNearbyResult(nearbyOsmResults, lat, lng);
+      if (bestOsmResult) {
+        populateScoutLeadForm({
+          ...bestOsmResult,
+          address: bestOsmResult.address || reverseData?.display_name || ''
+        });
+        setScoutStatus('Nearby places found for this ' + originLabel + '. Best match loaded; choose another option below if needed.', 'success');
+        return;
+      }
+    }
+  } catch (err) {
+    console.error('[Scout] Nearby OSM lookup failed.', err);
+  }
+  if (reverseData?.display_name) {
+    populateScoutLeadForm({
+      name: reverseData.namedetails?.name || reverseData.display_name.split(',')[0] || 'Pinned location',
+      address: reverseData.display_name,
+      mapsLink: buildScoutMapsLink(reverseData.display_name, lat, lng),
+      lat: lat,
+      lng: lng,
+      category: reverseData.type || ''
+    });
+    normalizeScoutSearchResults([]);
+    setScoutStatus('Address found for this ' + originLabel + '. Add details or save it manually.', '');
+    return;
+  }
+  setScoutStatus('No nearby business details were found for this ' + originLabel + ', but you can still save the pin manually.', 'error');
 }
 async function selectScoutResult(index) {
   const item = scoutSearchResults[index];
@@ -2451,10 +2664,14 @@ async function selectScoutResult(index) {
       const service = getScoutPlacesService();
       if (!service) throw new Error('Google Places details could not initialize.');
       const details = await new Promise((resolve, reject) => {
+        const timeoutId = window.setTimeout(() => {
+          reject(new Error('Google Places details timed out. Using the search result fields instead.'));
+        }, 4500);
         service.getDetails({
           placeId: item.placeId,
           fields: ['name','formatted_address','formatted_phone_number','website','types','url','opening_hours','geometry']
         }, function(place, status) {
+          window.clearTimeout(timeoutId);
           if (status !== google.maps.places.PlacesServiceStatus.OK || !place) {
             reject(new Error('Google Places details were unavailable.'));
             return;
@@ -2617,8 +2834,8 @@ function useScoutLocation() {
     const lat = position.coords.latitude;
     const lng = position.coords.longitude;
     if (scoutMap) scoutMap.setView([lat, lng], 15);
-    setScoutMarker(lat, lng, { manual: true });
-    setScoutStatus('Current location loaded. Tap nearby businesses or add notes and save the lead.', 'success');
+    setScoutMarker(lat, lng, { manual: true, originLabel: 'current location' });
+    setScoutStatus('Current location loaded. Looking for nearby businesses now...', 'success');
   }, function(error) {
     console.error('[Scout] Location access failed.', error);
     const isFileProtocol = window.location.protocol === 'file:';
@@ -3389,6 +3606,5 @@ function clearHistory() {
   }
 }
 </script>
-const GOOGLE_API_KEY = "AIzaSyDqeHewzARw__NorzJWJb3NucCUeiClMjQ";
 </body>
 </html>
