@@ -530,6 +530,38 @@ select{
 .pricing-row-name{font-size:0.76rem;line-height:1.45;color:var(--char);}
 .pricing-row-price{font-size:0.74rem;font-weight:600;color:var(--red);white-space:nowrap;}
 .pricing-empty{padding:1rem;border:1px dashed var(--border);border-radius:14px;text-align:center;font-size:0.74rem;color:var(--gray);background:#fcfaf7;}
+.package-builder{
+  margin-top:0.9rem;padding:1rem;border:1px solid rgba(117,30,27,0.08);border-radius:18px;background:rgba(255,255,255,0.88);
+}
+.package-builder-head{display:flex;align-items:flex-end;justify-content:space-between;gap:1rem;margin-bottom:0.75rem;}
+.package-builder-title{font-size:0.62rem;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:var(--red);}
+.package-builder-sub{font-size:0.7rem;color:var(--gray);}
+.package-builder-controls{display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap;}
+.package-builder-controls .field{margin-bottom:0;min-width:160px;flex:1;}
+.package-preview-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px;margin-top:0.9rem;}
+.package-preview-empty{padding:0.95rem;border:1px dashed var(--border);border-radius:14px;text-align:center;font-size:0.73rem;color:var(--gray);background:#fcfaf7;}
+.proposal-shell{display:flex;flex-direction:column;gap:16px;}
+.proposal-intro{padding:1rem 1.05rem;border:1px solid rgba(117,30,27,0.08);border-radius:18px;background:linear-gradient(180deg,#fff,#fcf9f5);}
+.proposal-heading{font-size:0.62rem;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:var(--red);margin-bottom:0.7rem;}
+.proposal-subheading{font-family:var(--font-display);font-size:1.25rem;font-weight:600;color:var(--black);margin-bottom:0.35rem;}
+.proposal-meta{font-size:0.75rem;color:var(--gray);line-height:1.55;}
+.proposal-bullets{margin:0;padding-left:1.1rem;color:var(--char);font-size:0.82rem;line-height:1.7;}
+.proposal-bullets li{margin-bottom:0.32rem;}
+.proposal-packages{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;}
+.package-card{
+  position:relative;padding:1rem 1rem 0.95rem;border:1px solid rgba(117,30,27,0.1);border-radius:18px;background:linear-gradient(180deg,#fff,#fcf9f5);
+}
+.package-card.recommended{
+  border-color:rgba(117,30,27,0.34);box-shadow:0 16px 28px rgba(117,30,27,0.08);background:linear-gradient(180deg,#fffdfb,#f8eee6);
+}
+.package-badge{
+  display:inline-flex;align-items:center;justify-content:center;padding:4px 10px;border-radius:999px;background:#f7efe6;color:var(--red);
+  font-size:0.58rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;margin-bottom:0.8rem;
+}
+.package-card-title{font-family:var(--font-display);font-size:1.05rem;font-weight:600;color:var(--black);margin-bottom:0.6rem;}
+.package-card-total{margin-top:0.9rem;padding-top:0.8rem;border-top:1px solid rgba(117,30,27,0.08);font-size:0.78rem;font-weight:700;color:var(--red);}
+.package-card-note{margin-top:0.45rem;font-size:0.72rem;color:var(--gray);line-height:1.5;}
+.editable-field[contenteditable="true"]{outline:2px solid rgba(184,150,90,0.55);outline-offset:2px;border-radius:8px;background:#fffdf8;}
 
 /* ── RENEWAL FIELDS ── */
 .renewal-fields{display:none;background:linear-gradient(180deg, #fffaf4, #f8efe4);border:1px solid rgba(184,150,90,0.34);border-radius:18px;padding:1rem 1.25rem;margin-top:0.875rem;}
@@ -1270,6 +1302,29 @@ select{
         </div>
       </div>
 
+      <div class="package-builder">
+        <div class="package-builder-head">
+          <div>
+            <div class="package-builder-title">Package Builder</div>
+            <div class="package-builder-sub">Shape 1 to 3 clean package options for the call.</div>
+          </div>
+        </div>
+        <div class="package-builder-controls">
+          <div class="field">
+            <label>Packages</label>
+            <select id="packageCount" onchange="updatePackagePreview()">
+              <option value="1">1 package</option>
+              <option value="2">2 packages</option>
+              <option value="3" selected>3 packages</option>
+            </select>
+          </div>
+          <button class="prospect-btn" id="generatePackagesBtn" onclick="generatePackages()" type="button">Generate Packages</button>
+        </div>
+        <div class="package-preview-list" id="packagePreviewList">
+          <div class="package-preview-empty">Choose products, then generate packages.</div>
+        </div>
+      </div>
+
       <!-- SPEC SHEET PANEL -->
       <div class="spec-panel" id="specPanel" style="display:none;">
         <div class="spec-panel-header">
@@ -1441,145 +1496,37 @@ function renderPricingSummary(lines) {
     </div>
   `).join('');
 }
-function recalc(){let total=0,pcP=0,pcD=0;const pricingLines=[];all.forEach((p,i)=>{const prEl=document.getElementById('pr'+i);if(prEl)prEl.textContent=sel.has(i)?getSelectedPriceText(p):getBasePriceText(p);});sel.forEach(i=>{const p=all[i];const mult=getMult(p.type);const cq=p.customQty||p.qty||1;const lt=p.pr*cq*mult;total+=lt;if(p.type==='pp')pcP+=lt;if(p.type==='pd')pcD+=lt;let mktNote='';if(p.type==='pp'&&printMkts.size>0)mktNote=' ('+Array.from(printMkts).join(' + ')+')';if(p.type==='pd'&&digMkts.size>0)mktNote=' ('+Array.from(digMkts).join(' + ')+')';let priceStr='';if(p.pr>0){if(mult>1&&cq>1){priceStr='$'+lt.toLocaleString()+' ($'+p.pr.toLocaleString()+' x '+cq+' x '+mult+' markets)';}else if(mult>1){priceStr='$'+lt.toLocaleString()+' ($'+p.pr.toLocaleString()+' x '+mult+' markets)';}else if(cq>1){priceStr='$'+lt.toLocaleString()+' ($'+p.pr.toLocaleString()+' x '+cq+')';}else{priceStr='$'+lt.toLocaleString();}}else{priceStr=p.tg==='tbd'?'TBD':p.tg==='va'?'Complimentary':'Inquire for rate';}pricingLines.push({name:p.nm+(mktNote?mktNote:''),price:priceStr});});document.getElementById('tot').textContent='$'+total.toLocaleString();const tc=document.getElementById('total-count');tc.textContent=sel.size>0?sel.size+' product'+(sel.size>1?'s':'')+' selected':'';let bd=[];if(pcP>0&&printMkts.size>1)bd.push('PC Print: $'+(pcP/printMkts.size).toLocaleString()+' x '+printMkts.size+' markets = $'+pcP.toLocaleString());if(pcD>0&&digMkts.size>1)bd.push('PC Digital: $'+(pcD/digMkts.size).toLocaleString()+' x '+digMkts.size+' markets = $'+pcD.toLocaleString());document.getElementById('mkt-breakdown').textContent=bd.join('  ·  ');renderPricingSummary(pricingLines);updateSpecPanel();}
-async function generate(){if(!API_KEY){alert('Please enter your Anthropic API key first.');return;}if(sel.size===0){alert('Please select at least one product.');return;}const cn=document.getElementById('cn').value.trim()||'TBD';const indEl=document.getElementById('ind');const ind=indEl.options[indEl.selectedIndex]&&indEl.selectedIndex>0?indEl.options[indEl.selectedIndex].text:(indEl.value.trim()||'TBD');const wb=document.getElementById('wb').value.trim();const rel=document.getElementById('rel').value||'Not specified';
-  const goal=document.getElementById('goal').options[document.getElementById('goal').selectedIndex]?document.getElementById('goal').options[document.getElementById('goal').selectedIndex].text:'Not specified';
-  const budget=document.getElementById('budget').options[document.getElementById('budget').selectedIndex]?document.getElementById('budget').options[document.getElementById('budget').selectedIndex].text:'Not specified';
-  const timeline=document.getElementById('timeline').options[document.getElementById('timeline').selectedIndex]?document.getElementById('timeline').options[document.getElementById('timeline').selectedIndex].text:'Not specified';const gl=document.getElementById('gl').value.trim()||'Not specified';const pMkts=printMkts.size>0?Array.from(printMkts).join(' + '):'not specified';const dMkts=digMkts.size>0?Array.from(digMkts).join(' + '):'not specified';let pl=[],total=0;sel.forEach(i=>{const p=all[i];const mult=getMult(p.type);const qty=p.customQty||p.qty||1;const unitPr=p.pr;const lineTotal=unitPr*qty*mult;total+=lineTotal;let mktNote='';if(p.type==='pp'&&printMkts.size>0)mktNote=' ('+Array.from(printMkts).join(' + ')+')';if(p.type==='pd'&&digMkts.size>0)mktNote=' ('+Array.from(digMkts).join(' + ')+')';let priceStr='';if(unitPr>0){if(mult>1&&qty>1){priceStr='$'+lineTotal.toLocaleString()+' ($'+unitPr.toLocaleString()+' x '+qty+'x x '+mult+' markets)';}else if(mult>1){priceStr='$'+lineTotal.toLocaleString()+' ($'+unitPr.toLocaleString()+' x '+mult+' markets)';}else if(qty>1){priceStr='$'+lineTotal.toLocaleString()+' ($'+unitPr.toLocaleString()+' x '+qty+')';}else{priceStr='$'+lineTotal.toLocaleString();}}else{priceStr=p.tg==='tbd'?'TBD':p.tg==='va'?'Complimentary':'Inquire for rate';}pl.push(p.nm+(mktNote?mktNote:'')+' | '+priceStr);});const repN=localStorage.getItem('rep_name')||'Ashley Sauls';
-  const repT=localStorage.getItem('rep_title')||'Account Executive';
-  var repP=localStorage.getItem('rep_phone')||'281.705.8383';
-  const repE=localStorage.getItem('rep_email')||'ashley@tribeza.com';
-  // Format phone with dots regardless of how it was stored
-  var repPDigits=repP.replace(/[^0-9]/g,'');
-  if(repPDigits.length===10) repP=repPDigits.slice(0,3)+'.'+repPDigits.slice(3,6)+'.'+repPDigits.slice(6);
-  // Build prompt — switches for renewal mode
-  const isRenewal = currentMode === 'renewal';
-  const currentSpend = isRenewal ? document.getElementById('currentSpend').value : '';
-  const renewalDate = isRenewal ? document.getElementById('renewalDate').value : '';
-  const currentProds = isRenewal ? document.getElementById('currentProducts').value : '';
-  const whatWorking = isRenewal ? document.getElementById('whatWorking').value : '';
-  const renewalGoal = isRenewal ? (document.getElementById('renewalGoal').options[document.getElementById('renewalGoal').selectedIndex]?.text || '') : '';
-  const socialProof = document.getElementById('socialProof')?.value.trim() || '';
-  const objection = document.getElementById('objection')?.value || '';
-
-  // Relationship tone modifier
-  const relTone = rel === 'Cold outreach' ? 'This is a cold outreach — this person has never heard of us. Open with something about THEM before mentioning the publication. Establish credibility early. Make them feel discovered, not sold to.' :
-    rel === 'Warm lead' ? 'This is a warm lead who has some familiarity. Skip the brand intro — get to the value quickly. Reference what drew them to us.' :
-    rel === 'Referral' ? 'This came via referral. Acknowledge that warmly in the opening — it creates immediate trust and context.' :
-    rel === 'Existing client' ? 'This is an existing client. Be conversational and appreciative. Reference the relationship directly. Skip any introductory brand explanation.' : '';
-
-  // Deadline awareness
-  const deadlineNote = `2026 KEY AD DEADLINES — use these when timeline is relevant:
-- TRIBEZA Jan/Feb (Interiors): Space closes Dec 1
-- TRIBEZA Mar/Apr (25th Anniversary + Spring Style): Space closes Feb 1
-- TRIBEZA May/Jun (Curb Appeal): Space closes Apr 1
-- TRIBEZA Jul/Aug (Getaway + Toast of the Town): Space closes Jun 1
-- TRIBEZA Sep/Oct (Pet Guide): Space closes Aug 1
-- TRIBEZA Nov/Dec (Holiday Gift Guide): Space closes Oct 1
-- TRIBEZA HOME Spring: Space closes Mar 1
-- TRIBEZA HOME Fall: Space closes Sep 1
-- Wellness Guide: Commit by Jan 8
-- Valentine's Guide: Commit by Jan 16
-- Wedding Guide: Commit by Jan 30
-- Spring Style Guide print: Commit by Feb 15
-- Summer Getaway / Toast of the Town: Commit by May 15
-- Pet Guide: Commit by Aug 14
-- PaperCity: Space deadline is 25th two months prior to publication
-- Round Top Spring Show: January / February
-- Round Top Fall Show: October`;
-
-  const systemPrompt=`You are a media sales proposal writer for the Texas Portfolio, which includes TRIBEZA, PaperCity, and Round Top by PaperCity. You write sophisticated, warm, confident proposals in an editorial voice — like a trusted Texas insider, not a salesperson.
-
-${relTone ? relTone + '\n\n' : ''}${isRenewal ? `This is a RENEWAL proposal for an existing client. Your tone should acknowledge the relationship, celebrate what's working, and make the upsell feel natural and earned — never pushy. Lead with appreciation for the partnership before introducing anything new.
-
-2026 EDITORIAL CONTEXT FOR RENEWALS — weave in what's new and exciting in 2026 that makes this the right year to grow:
-- TRIBEZA is celebrating its 25th Anniversary in the March/April issue — a significant cultural moment in Austin
-- TRIBEZA HOME is now twice yearly (Spring and Fall) — more opportunity to reach home design buyers
-- Texas Design Week returns to Houston in April 2026 and Dallas in November 2026
-- Round Top continues to grow its digital audience — now 39,000+ social followers and 18,500+ email subscribers
-- PaperCity reaches 574,000 readers across Dallas and Houston — the #1 luxury lifestyle platform in Texas
-
-Renewal proposal structure:
-1. A warm opening that acknowledges the relationship (2-3 sentences — specific, never generic)
-2. "What's Working" — 2-4 concise bullet points
-3. "2026 Recommendation" — 3-5 concise bullet points explaining the proposed mix. Reference what's new in 2026 that's relevant to their category.
-4. "Media Plan & Investment" — clean product list with prices
-5. A confident closing paragraph that makes renewal feel like the obvious next step. Reference contract date if provided.
-6. Signature` : `Always write proposals in this exact order:
-1. A personalized opening paragraph (2-3 sentences, specific to this client and their goals — never generic)
-2. "Why This Mix" — 3-5 concise bullet points tying the selected products to the client's goals and our audience
-3. "Media Plan & Investment" — a clean list of all selected products with prices
-4. A short, warm closing paragraph with a clear next step
-5. Signature`}
-
-Voice rules: sophisticated, warm, confident. No corporate jargon. No em-dashes. No generic filler. Every sentence earns its place. Write like you know this client personally. FORMATTING RULE: Preserve clean line breaks. Use bullet points that begin with "- " for "What's Working", "Why This Mix", and "2026 Recommendation". For the Media Plan section specifically: put EACH product on its own separate line, one product per line, never combine products with dashes or separators.
-
-${deadlineNote}
-
-INDUSTRY KNOWLEDGE — use this to write a smarter "Why This Mix" section:
-- Interior Design / Home Furnishings / Showroom: Lead with TRIBEZA HOME editorial environment. Readers are $300K+ HHI homeowners, designers, architects actively planning projects. TRIBEZA HOME is direct-mailed to Tarrytown, Westlake, Barton Creek. The HOME Directory is a year-round resource. Round Top audience is deeply connected to antiques and design. If timeline is spring, mention TRIBEZA HOME Spring deadline is March 1.
-- Architecture / Home Builder / Remodeling: TRIBEZA HOME is the primary vehicle. Curb Appeal (May/Jun) is the most natural section. Sponsored Editorial tells the project story. TRIBEZA HOME Directory builds year-round credibility.
-- Real Estate: TRIBEZA readers are the buyers. Featured Properties Module has exclusivity (max 3 firms). Property Profile Article drives qualified leads. Instagram Home of Week builds visual brand. PaperCity reaches the Dallas/Houston buyer.
-- Restaurant / Food & Beverage: Toast of the Town (Jul/Aug, deadline May 15) is the anchor summer placement. Readers dine out multiple times per week. Sponsored Editorial tells the story that drives reservations. If summer is coming, create urgency around Toast deadline.
-- Wellness / Spa / Fitness: Wellness Guide (January, deadline Jan 8) is the primary entry point — flag urgency if early in year. Readers invest heavily in health and aesthetics. Sponsored Editorial builds trust before the ask.
-- Fashion / Luxury Retail: PaperCity is the flagship for this category in Dallas/Houston. TRIBEZA reaches the Austin design-forward shopper. Holiday Gift Guide (deadline Oct 1), Valentine's Guide (deadline Jan 16), and Mother's Day Guide are essential seasonal placements.
-- Hotels / Travel: Getaway Guide (deadline May 15) is the anchor. Round Top Dedicated Email reaches 18,500+ who already travel for design. Readers take 4+ trips per year.
-- Finance / Law / Professional Services: Lead with editorial credibility. E-Newsletter Takeover for sustained presence. Print for permanence and trust. TRIBEZA's reader HHI is $300K+ — exactly the client profile.
-- Arts / Gallery / Museum: Digital Social Hour for openings. Event Calendar is where culturally active readers plan. Sponsored Editorial for season stories. Event Partnership around TRIBEZA Curators (November) for the right gallery.
-- Jewelry / Fine Accessories: Card Decks are visually rich for this category. Holiday Gift Guide (Oct deadline), Valentine's Guide (Jan deadline), and Mother's Day Guide are essential. PaperCity Dallas/Houston reaches the jewelry buyer.
-- Automotive / Luxury: PaperCity reader is the buyer — 87% own or lease a luxury vehicle. Event Partnership for launch experiences. Sponsored Editorial focuses on the experience not the specs.
-- Med Spa / Aesthetics / Plastic Surgery: Wellness Guide for the wellness angle. Spring Style Guide (Mar/Apr) for the pre-summer aesthetic moment. Sponsored Editorial builds the physician story. Never clinical — always aspirational.
-- Wine / Spirits / Craft Beverage: Toast of the Town (Jul/Aug) is made for this category. Sponsored Editorial tells the brand story. Event Partnership for tasting events. Deadline urgency: Toast closes May 15.
-- Round Top — Dealer / Vendor / Venue: Show Guide print is the foundation. Spotlight (2-page feature with map) is the premium option. Dedicated Email reaches 18,500+ show-goers. Sponsored article on roundtop.com builds year-round SEO.
-- Wedding Industry: Wedding & Events Guide (deadline Jan 30) is the primary vehicle. Spring Style Guide for the bridal fashion angle. Event Calendar listing for any bridal show or venue tour.
-
-OBJECTION HANDLING — if an objection is provided in the client brief, address it naturally within the "Why This Mix" section. Never be defensive. Reframe it as a strength:
-- "Budget is tight": Lead with ROI — our readers have $300K+ HHI and actively purchase from advertisers. 79% of PaperCity readers have purchased from an advertiser. Emphasize efficiency over volume.
-- "Already advertising elsewhere": Position as complementary, not competitive. "What you're doing is building awareness — what we do is reach the exact buyer who's already in the market for what you offer."
-- "Not sure print still works": Our readers choose to subscribe. 96% of PaperCity readers take action after reading an article. Print in a luxury context isn't declining — it's becoming more exclusive.
-- "Wants to start small": Honor it. Frame the smaller option as a pilot. "Let's start with X, see what the response looks like, and build from there."
-- "Needs internal approval": Give them the ammunition. The proposal should be written so they can forward it and let it do the talking.
-- "Tried magazine ads before without results": Probe first, then reframe. Results from generic magazines don't predict results from a hyper-targeted luxury audience who has opted in to this content.
-
-CRITICAL MATH RULE: You MUST copy the Media Plan & Investment section EXACTLY as provided below. Do not change any prices, do not recalculate, do not add or remove line items. Copy the product name and price exactly as given. The total is already calculated — use it exactly.`;const mediaSection='MEDIA PLAN & INVESTMENT\n'+pl.join('\n')+'\n\nTOTAL INVESTMENT: $'+total.toLocaleString()+(total===0?' (some items are TBD or rate on request)':'');
-  const renewalContext = isRenewal ? `\nRENEWAL CONTEXT:\nCurrent Annual Spend: ${currentSpend||'not specified'}\nContract End / Renewal Date: ${renewalDate||'not specified'}\nCurrently Running: ${currentProds||'not specified'}\nWhat's Working: ${whatWorking||'not specified'}\nRenewal Goal: ${renewalGoal||'not specified'}\n` : '';
-  const socialProofLine = socialProof ? `Current clients in similar category to reference naturally: ${socialProof}\n` : '';
-  const objectionLine = objection ? `Objection to address in the proposal (weave in naturally, don't be defensive): ${objection}\n` : '';
-  const userPrompt='Please write a '+(isRenewal?'renewal ':'')+'proposal for the following client:\n\nClient: '+cn+'\n'+(wb?'Website: '+wb+'\n':'')+'Industry: '+ind+'\nRelationship: '+rel+'\nPrimary Goal: '+goal+'\nBudget Range: '+budget+'\nTimeline: '+timeline+'\n'+(gl?'Additional Notes: '+gl+'\n':'')+socialProofLine+objectionLine+renewalContext+'PaperCity Print Markets: '+pMkts+'\nPaperCity Digital Markets: '+dMkts+'\n\nWrite the proposal in the exact structure defined in your instructions. Copy this media plan section EXACTLY with no changes to prices or names:\n\n'+mediaSection+'\n\n'+(isRenewal?'Close with a confident renewal ask that makes saying yes feel easy. Reference the renewal date if provided.':'Close with a short warm paragraph and a clear next step.')+'\nSignature: '+repN+' | '+repT+' | TRIBEZA · PaperCity · Round Top | '+repP+' | '+repE;;const outSec=document.getElementById('outputSection');const outBody=document.getElementById('outputBody');const loading=document.getElementById('loading');const btn=document.getElementById('genBtn');outSec.classList.add('visible');loading.classList.add('visible');outBody.textContent='';btn.disabled=true;outSec.scrollIntoView({behavior:'smooth',block:'start'});try{const res=await fetch('/.netlify/functions/proxy',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':API_KEY,'anthropic-version':'2023-06-01'},body:JSON.stringify({model:'claude-sonnet-4-5',max_tokens:1500,system:systemPrompt,messages:[{role:'user',content:userPrompt}]})});const data=await res.json();loading.classList.remove('visible');if(data.error){outBody.textContent='Error: '+data.error.message;}else{var rawText=data.content?.[0]?.text||'No response received.';rawText=rawText.replace(/\u2014/g,' - ').replace(/\u2013/g,' - ');rawText=rawText.split('\n').filter(function(l){return l.trim().toUpperCase().indexOf('MEDIA PROPOSAL FOR')!==0;}).join('\n').trim();
-    // Preserve intentional list formatting and clean up excess spacing
-    rawText=rawText.replace(/\r/g,'');
-    rawText=rawText.replace(/\n[ \t]+/g,'\n');
-    rawText=rawText.replace(/[ \t]+\n/g,'\n');
-    rawText=rawText.replace(/\n{3,}/g,'\n\n');
-    rawText=rawText.replace(/[ \t]{2,}/g,' ');
-    outBody.textContent=rawText;
-    // Save to history
-    const historyEntry = {
-      client: cn, website: wb, industry: ind, relationship: rel,
-      goal: goal, budget: budget, timeline: timeline, notes: gl,
-      mode: currentMode,
-      printMkts: Array.from(printMkts), digMkts: Array.from(digMkts),
-      selectedProducts: Array.from(sel),
-      total: total,
-      date: new Date().toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}),
-      proposalText: rawText.substring(0, 500), // preview only
-      currentSpend: currentMode==='renewal'?document.getElementById('currentSpend').value:'',
-      renewalDate: currentMode==='renewal'?document.getElementById('renewalDate').value:'',
-      currentProducts: currentMode==='renewal'?document.getElementById('currentProducts').value:'',
-      whatWorking: currentMode==='renewal'?document.getElementById('whatWorking').value:'',
-      renewalGoal: currentMode==='renewal'?document.getElementById('renewalGoal').value:''
-    };
-    saveHistory(historyEntry);
-  }}catch(err){loading.classList.remove('visible');outBody.textContent='Error connecting to the API. Please check your API key and try again.\n\n'+err.message;}btn.disabled=false;}
-function copyOutput(){const text=document.getElementById('outputBody').textContent;navigator.clipboard.writeText(text).then(()=>{const btn=event.target;btn.textContent='Copied!';setTimeout(()=>btn.textContent='Copy to clipboard',2000);});}
-function clearOutput(){document.getElementById('outputSection').classList.remove('visible');document.getElementById('outputBody').textContent='';}
+function recalc(){let total=0,pcP=0,pcD=0;const pricingLines=[];all.forEach((p,i)=>{const prEl=document.getElementById('pr'+i);if(prEl)prEl.textContent=sel.has(i)?getSelectedPriceText(p):getBasePriceText(p);});sel.forEach(i=>{const p=all[i];const mult=getMult(p.type);const cq=p.customQty||p.qty||1;const lt=p.pr*cq*mult;total+=lt;if(p.type==='pp')pcP+=lt;if(p.type==='pd')pcD+=lt;let mktNote='';if(p.type==='pp'&&printMkts.size>0)mktNote=' ('+Array.from(printMkts).join(' + ')+')';if(p.type==='pd'&&digMkts.size>0)mktNote=' ('+Array.from(digMkts).join(' + ')+')';let priceStr='';if(p.pr>0){if(mult>1&&cq>1){priceStr='$'+lt.toLocaleString()+' ($'+p.pr.toLocaleString()+' x '+cq+' x '+mult+' markets)';}else if(mult>1){priceStr='$'+lt.toLocaleString()+' ($'+p.pr.toLocaleString()+' x '+mult+' markets)';}else if(cq>1){priceStr='$'+lt.toLocaleString()+' ($'+p.pr.toLocaleString()+' x '+cq+')';}else{priceStr='$'+lt.toLocaleString();}}else{priceStr=p.tg==='tbd'?'TBD':p.tg==='va'?'Complimentary':'Inquire for rate';}pricingLines.push({name:p.nm+(mktNote?mktNote:''),price:priceStr});});document.getElementById('tot').textContent='$'+total.toLocaleString();const tc=document.getElementById('total-count');tc.textContent=sel.size>0?sel.size+' product'+(sel.size>1?'s':'')+' selected':'';let bd=[];if(pcP>0&&printMkts.size>1)bd.push('PC Print: $'+(pcP/printMkts.size).toLocaleString()+' x '+printMkts.size+' markets = $'+pcP.toLocaleString());if(pcD>0&&digMkts.size>1)bd.push('PC Digital: $'+(pcD/digMkts.size).toLocaleString()+' x '+digMkts.size+' markets = $'+pcD.toLocaleString());document.getElementById('mkt-breakdown').textContent=bd.join('  ·  ');renderPricingSummary(pricingLines);updateSpecPanel();updatePackagePreview();}
+function getSelectedProposalItems(){const items=[];sel.forEach(i=>{const p=all[i];const mult=getMult(p.type);const qty=p.customQty||p.qty||1;const total=p.pr*qty*mult;let mktNote='';if(p.type==='pp'&&printMkts.size>0)mktNote=' ('+Array.from(printMkts).join(' + ')+')';if(p.type==='pd'&&digMkts.size>0)mktNote=' ('+Array.from(digMkts).join(' + ')+')';items.push({id:i,pub:p.pub,name:p.nm,displayName:p.nm+(mktNote||''),shortName:getConciseItemName(p.nm),price:p.pr,qty:qty,total:total,type:p.type,tag:p.tg||'',hasVariablePrice:p.pr<=0&&p.tg!=='va',isComplimentary:p.tg==='va'});});return items.sort((a,b)=>a.total-b.total||a.name.localeCompare(b.name));}
+function getConciseItemName(name){return String(name||'').replace(/\s+\(\d+x[^)]*\)/gi,'').replace(/\s+\([^)]*markets?\)/gi,'').replace(/\s+—\s+\$[\d,\/sendmo]+/gi,'').replace(/\s{2,}/g,' ').trim();}
+function getPackageCount(){return parseInt(document.getElementById('packageCount')?.value||'3',10);}
+function getPackageBlueprints(count){if(count===1)return[{title:'Recommended',recommended:true}];if(count===2)return[{title:'Starter',recommended:false},{title:'Recommended',recommended:true}];return[{title:'Starter',recommended:false},{title:'Recommended',recommended:true},{title:'Premium',recommended:false}];}
+function getPackageIndices(items,count){const n=items.length;if(!n)return[];if(count===1)return[[0,n]];if(count===2){const starterEnd=Math.max(1,Math.min(n-1,Math.ceil(n*0.5)));return[[0,starterEnd],[0,n]];}const starterEnd=Math.max(1,Math.min(n-2,Math.ceil(n*0.4)));const recEnd=Math.max(starterEnd+1,Math.min(n-1,Math.ceil(n*0.75)));return[[0,starterEnd],[0,recEnd],[0,n]];}
+function getPackageNote(title,recommended,hasVariablePrice){let note=title==='Starter'?'Focused entry point with the strongest core placements.':title==='Premium'?'Broadest visibility across the selected channels.':'Balanced mix built for repeat visibility and an easy yes.';if(hasVariablePrice)note+=' Includes select items priced on request.';return note;}
+function formatPackageTotal(pkg){const totalText='$'+pkg.total.toLocaleString();return pkg.hasVariablePrice?totalText+'+':totalText;}
+function buildPackages(){const items=getSelectedProposalItems();const count=getPackageCount();const blueprints=getPackageBlueprints(count);const ranges=getPackageIndices(items,count);return blueprints.map((blueprint,index)=>{const slice=items.slice(ranges[index][0],ranges[index][1]);const total=slice.reduce((sum,item)=>sum+item.total,0);return{title:blueprint.title,recommended:blueprint.recommended,items:slice,total:total,hasVariablePrice:slice.some(item=>item.hasVariablePrice),note:getPackageNote(blueprint.title,blueprint.recommended,slice.some(item=>item.hasVariablePrice))};});}
+function escapeAttribute(value){return String(value||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;');}
+function renderPackageCards(packages){return packages.map((pkg,index)=>`<div class="package-card${pkg.recommended?' recommended':''}">${pkg.recommended?'<div class="package-badge">Recommended</div>':''}<div class="package-card-title editable-field" data-editable="1" contenteditable="false">${escapeHtml(pkg.title)}</div><ul class="proposal-bullets editable-field" data-editable="1" contenteditable="false">${pkg.items.map(item=>`<li>${escapeHtml(item.shortName||item.displayName)}</li>`).join('')}</ul><div class="package-card-total editable-field" data-editable="1" contenteditable="false">Total: ${escapeHtml(formatPackageTotal(pkg))}</div><div class="package-card-note editable-field" data-editable="1" contenteditable="false">${escapeHtml(pkg.note)}</div></div>`).join('');}
+function updatePackagePreview(){const wrap=document.getElementById('packagePreviewList');if(!wrap)return;if(sel.size===0){wrap.innerHTML='<div class="package-preview-empty">Choose products, then generate packages.</div>';currentGeneratedPackages=[];return;}const packages=buildPackages();currentGeneratedPackages=packages;wrap.innerHTML=renderPackageCards(packages);}
+function getContextText(selectId){const el=document.getElementById(selectId);return el&&el.selectedIndex>0?el.options[el.selectedIndex].text:'';}
+function buildWhyThisMakesSense(){const bullets=[];const industry=getContextText('ind');const goal=getContextText('goal');const timeline=getContextText('timeline');const items=getSelectedProposalItems();const hasPrint=items.some(item=>item.pub.indexOf('Print')!==-1||item.name.toLowerCase().indexOf('full page')!==-1||item.name.toLowerCase().indexOf('spread')!==-1);const hasDigital=items.some(item=>item.pub.indexOf('Digital')!==-1||/e-blast|display|social|article|newsletter|email|card deck/i.test(item.name));if(industry)bullets.push('Strong audience alignment with '+industry.replace(/\s+\/\s+.*/,'').replace(/ — /g,' ')+' buyers.');if(goal)bullets.push('Built to support '+goal.toLowerCase()+' with clear, skimmable placements.');if(hasPrint&&hasDigital)bullets.push('Balanced print + digital presence for repeated visibility without overcomplicating the mix.');else if(hasPrint)bullets.push('Print-led presence adds credibility and helps the brand feel established quickly.');else if(hasDigital)bullets.push('Digital-first mix keeps the plan nimble, visible, and easy to activate fast.');if(timeline)bullets.push('Timed for '+timeline.toLowerCase()+' so visibility lines up with the decision window.');if(bullets.length<2)bullets.push('Package options are structured to make the next step easy to compare and approve.');if(bullets.length<3)bullets.push('Each tier keeps the recommendation concise, visible, and easy to talk through live.');return bullets.slice(0,3);}
+function buildProposalHeader(clientName){const industry=getContextText('ind');const goal=getContextText('goal');const timeline=getContextText('timeline');return [industry,goal,timeline].filter(Boolean).join(' • ')||'Clean package options built for a fast decision.';}
+function renderProposal(packages){const clientName=document.getElementById('cn').value.trim()||'Client';const whyBullets=buildWhyThisMakesSense();const headerMeta=buildProposalHeader(clientName);return `<div class="proposal-shell"><div class="proposal-intro"><div class="proposal-heading">Proposal Snapshot</div><div class="proposal-subheading editable-field" data-editable="1" contenteditable="false">${escapeHtml(clientName)}</div><div class="proposal-meta editable-field" data-editable="1" contenteditable="false">${escapeHtml(headerMeta)}</div></div><div class="proposal-intro"><div class="proposal-heading">Why this makes sense</div><ul class="proposal-bullets editable-field" data-editable="1" contenteditable="false">${whyBullets.map(bullet=>`<li>${escapeHtml(bullet)}</li>`).join('')}</ul></div><div class="proposal-packages">${renderPackageCards(packages)}</div></div>`;}
+function buildPlainTextProposal(packages){const clientName=document.getElementById('cn').value.trim()||'Client';const lines=[clientName,'','WHY THIS MAKES SENSE'];buildWhyThisMakesSense().forEach(bullet=>lines.push('- '+bullet));packages.forEach(pkg=>{lines.push('');lines.push(pkg.title.toUpperCase()+(pkg.recommended?' (RECOMMENDED)':''));pkg.items.forEach(item=>lines.push('- '+item.shortName));lines.push('Total: '+formatPackageTotal(pkg));if(pkg.note)lines.push(pkg.note);});const repN=localStorage.getItem('rep_name')||'Ashley Sauls';const repT=localStorage.getItem('rep_title')||'Account Executive';const repP=localStorage.getItem('rep_phone')||'281.705.8383';const repE=localStorage.getItem('rep_email')||'ashley@tribeza.com';lines.push('');lines.push(repN+' | '+repT+' | TRIBEZA · PaperCity · Round Top | '+repP+' | '+repE);return lines.join('\n').trim();}
+function saveProposalHistory(text){const historyEntry={client:document.getElementById('cn').value.trim()||'Client',website:document.getElementById('wb').value.trim(),industry:getContextText('ind'),relationship:document.getElementById('rel').value,goal:getContextText('goal'),budget:getContextText('budget'),timeline:getContextText('timeline'),notes:document.getElementById('gl').value.trim(),mode:currentMode,printMkts:Array.from(printMkts),digMkts:Array.from(digMkts),selectedProducts:Array.from(sel),total:getSelectedProposalItems().reduce((sum,item)=>sum+item.total,0),date:new Date().toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}),proposalText:text.substring(0,500),currentSpend:currentMode==='renewal'?document.getElementById('currentSpend').value:'',renewalDate:currentMode==='renewal'?document.getElementById('renewalDate').value:'',currentProducts:currentMode==='renewal'?document.getElementById('currentProducts').value:'',whatWorking:currentMode==='renewal'?document.getElementById('whatWorking').value:'',renewalGoal:currentMode==='renewal'?document.getElementById('renewalGoal').value:''};saveHistory(historyEntry);}
+function generatePackages(){if(sel.size===0){alert('Please select at least one product.');return;}const packages=buildPackages();currentGeneratedPackages=packages;document.getElementById('packagePreviewList').innerHTML=renderPackageCards(packages);}
+async function generate(){if(sel.size===0){alert('Please select at least one product.');return;}const packages=buildPackages();currentGeneratedPackages=packages;const outSec=document.getElementById('outputSection');const outBody=document.getElementById('outputBody');const loading=document.getElementById('loading');const btn=document.getElementById('genBtn');outSec.classList.add('visible');loading.classList.remove('visible');btn.disabled=true;outBody.innerHTML=renderProposal(packages);lastGeneratedPlainText=buildPlainTextProposal(packages);saveProposalHistory(lastGeneratedPlainText);btn.disabled=false;outSec.scrollIntoView({behavior:'smooth',block:'start'});}
+function copyOutput(){const text=(document.getElementById('outputBody').innerText||lastGeneratedPlainText||'').trim();navigator.clipboard.writeText(text).then(()=>{const btn=event.target;const original=btn.textContent;btn.textContent='Copied!';setTimeout(()=>btn.textContent=original,2000);});}
+function clearOutput(){document.getElementById('outputSection').classList.remove('visible');document.getElementById('outputBody').innerHTML='';lastGeneratedPlainText='';}
 
 function toggleEdit() {
   var box=document.getElementById('outputBody');
   var btn=document.getElementById('editBtn');
-  var editing=box.contentEditable==='true';
-  if(editing){box.contentEditable='false';box.style.outline='';box.style.background='';btn.textContent='Edit';btn.style.color='';btn.style.borderColor='';}
-  else{box.contentEditable='true';box.style.outline='2px solid #b8965a';box.style.outlineOffset='-2px';box.style.background='#fffdf8';btn.textContent='Done';btn.style.color='#b8965a';btn.style.borderColor='#b8965a';}
+  var editing=box.getAttribute('data-editing')==='true';
+  box.setAttribute('data-editing',editing?'false':'true');
+  box.querySelectorAll('.editable-field').forEach(function(el){el.setAttribute('contenteditable',editing?'false':'true');});
+  if(editing){box.style.outline='';box.style.background='';btn.textContent='Edit';btn.style.color='';btn.style.borderColor='';}
+  else{box.style.outline='2px solid #b8965a';box.style.outlineOffset='-2px';box.style.background='#fffdf8';btn.textContent='Done';btn.style.color='#b8965a';btn.style.borderColor='#b8965a';}
 }
 
 function downloadPDF() {
@@ -2027,6 +1974,8 @@ let meetingNotes = [];
 let editingMeetingId = null;
 let currentProposalContext = null;
 let proposalNotesOpen = false;
+let currentGeneratedPackages = [];
+let lastGeneratedPlainText = '';
 
 build();
 
